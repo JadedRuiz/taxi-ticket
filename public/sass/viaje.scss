@@ -1,0 +1,49 @@
+.open-sans-font {
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+    font-size: 16px;
+}
+p {
+    margin: 0px;
+    padding: 0px;
+}
+.pantalla {
+    height: 100vh;
+    background-color: #e2e2e2;
+}
+.img-main {
+    height: 300px;
+    max-height: 300px;
+}
+.title-pantalla {
+    font-size: 30px;
+    font-weight: 500;
+}
+.btn-siguiente {
+    background-color: #04EACA;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+}
+#reserva h2 {
+    font-size: 22px;
+}
+#reserva p {
+    font-size: 16px;
+    text-align: center;
+}
+.precio {
+    font-weight: bold;
+    font-size: 25px !important;
+}
+.tabs span{
+    font-size: 18px;
+    color: #31444C;
+}
+.span-active {
+    color: #04EACA !important;
+}
