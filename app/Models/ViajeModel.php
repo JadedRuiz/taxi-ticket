@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ViajeModel extends Model
 {
-    use HasFactory;
-
     protected $table= 'tbl_viajes';
+
+    protected $primaryKey='id_viaje';
+
+    public $incrementing = true;
+
+    protected $fillable= [
+        'folio',
+        'nombre_viaje',
+        'status', 
+        'tipo_servicio', 
+        'tipo_viaje', 
+        'date_creacion',
+        'comentarios'
+    ];
 
     const UPDATED_AT = null;
     const CREATED_AT = null;
-
-    protected $fillable= [
-        'iIdDirOrigen',
-        'iIdDirDest',
-        'sNombre', 
-        'sTelefono', 
-        'sCorreo', 
-        'iStatus', 
-        'iTipo',
-        'dtCreacion'
-    ];
 }
