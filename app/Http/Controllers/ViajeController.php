@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ViajeModel as Viaje;
 use App\Models\DetViajeModel as DetViaje;
 use App\Models\DestinoModel as Destino;
@@ -37,13 +38,13 @@ class ViajeController extends Controller
                 "folio" => $folio,
                 "nombre_viaje" => "Viaje Reservado",
                 "status" => 1, //Pendiente
-                "tipo_servicio" => "Mi Taxi",
+                "tipo_servicio" => "TAXI SEGURO ADO",
                 "tipo_viaje" => "Viaje Sencillo",
                 "date_creacion" => date('Y-m-d h:m:s'),
-                "comentarios" => "VIAJE MI TAXI"
+                "comentarios" => "Sin comentarios"
             ]);
 
-            DetViaje::create([
+            $det_viaje= DetViaje::create([
                 "viaje_id" => $viaje->id_viaje,
                 "origen" => $res["iIdOrigen"],
                 "destino" => $res["iIdDestino"],
@@ -57,6 +58,15 @@ class ViajeController extends Controller
             ]);
 
             DB::commit();
+
+            //Enviar correo al ciudadano
+            $destino= Destino::select('destino','precio','distancia','duracion')->where('id_destino',$res["iIdDestino"])->first();
+            $origen= DB::table('tbl_origenes')->select('origen')->where('id_origen',$res["iIdOrigen"])->first();
+
+            Mail::send('plantillas/ticket_correo', compact('viaje','det_viaje',"destino","origen"), function ($message) use ($res){
+                $message->subject('Reservas - Mi taxi');
+                $message->to($res["sCorreo"],$res["sNombre"]);     
+            });
 
             return ['ok' => true, "data" => "Registro Exitoso"];
 
