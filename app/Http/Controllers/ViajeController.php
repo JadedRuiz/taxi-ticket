@@ -65,4 +65,8 @@ class ViajeController extends Controller
             return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
         }
     }
+
+    function reservaExitosa() {
+        return view('reserva_exitosa');
+    }
 }

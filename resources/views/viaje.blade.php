@@ -30,6 +30,9 @@
             <div class="col-12 px-0 position-relative">
                 <div class="contentMovement w-100 d-flex align-items-center flex-column">
                     <input class="form-control" type="text" name="" id="inpDir" placeholder="direccion">
+                    <small class="alert-dir">
+                        *Es necesario seleccionar una dirección
+                    </small>
                     <span class="btnSearch"><i class="fa fa-search" aria-hidden="true"></i></span>
                     <ul class="list-group list-default mt-1">
                         <li class="list-group-item">

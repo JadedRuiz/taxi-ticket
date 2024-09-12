@@ -62,10 +62,17 @@ p {
     font-weight: 500;
 }
 .btn-siguiente {
-    background-color: #04EACA;
-    color: white;
-    border: none;
-    padding: 5px 10px;
+    background-color: #04EACA !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 10px !important;
+}
+.alert-dir {
+    display: none;
+    text-align: start;
+    width: 90%;
+    color: rgb(228, 41, 41);
+    font-weight: bold !important;
 }
 #reserva h2 {
     font-size: 22px;
@@ -98,7 +105,7 @@ p {
 .inputAnimation {
     position: absolute;
     z-index: 1;
-    margin-top: -450px;
+    margin-top: -68vh;
 }
 .btnClose {
     margin-top: 10px;
@@ -156,12 +163,23 @@ p {
     color: white !important;
     
 }
+.title-reserva {
+    color: #834979;
+    font-weight: bold;
+    font-size: 25px;
+    text-align: center;
+}
+.subtitle-reserva {
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+}
 @keyframes inpSubirAnimation {
     from {
         top: 0px;
     }
 
     to {
-        margin-top: -450px;
+        margin-top: -68vh;
     }
 }

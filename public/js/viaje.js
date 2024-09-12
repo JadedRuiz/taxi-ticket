@@ -19,6 +19,7 @@ $(window).on('load',function() {
 $(document).on('click','#inpDir',function() {
     let inp = $(this);
     $(inp).parent().addClass('subirInput');
+    $(".alert-dir").hide();
     $(".buscador-pantalla").show();
     $(".list-default").show();
     $("#inpDir").val("");
@@ -58,8 +59,10 @@ $(document).on('click','.list-group-item',function() {
 });
 
 //Siguiente Pantalla 1
-$(document).on('click','#btnSiguiente1',function() {
+$(document).on('click','#btnSiguiente1',function(event) {
+    event.preventDefault();
     if($('#inpDir').val() == ""){
+        $(".alert-dir").show();
         return;
     }   
     $("#inicio").addClass('d-none');
@@ -116,7 +119,7 @@ function obtenerDestinos() {
                 html+= `
                    <li class="list-group-item" attr-data="${element.iIdDestino}">
                             <p class="my-0 py-0">${element.sNombre}</p>
-                            <small>${element.sDireccion}</small>
+                            <small>${ element.sDireccion == null ? 'Sin dirección' : element.sDireccion }</small>
                     </li> 
                 `;
             });
@@ -150,7 +153,7 @@ function reservar() {
     $(".text-btn").html("&nbsp; Reservando..")
     $.post("viaje/reservar",json, function(res) {
         if(res.ok) {
-            
+            location.href= "viaje/reservaExitosa";
         }
     })
 }

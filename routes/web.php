@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\DestinoController;
 
-Route::get('/', [ViajeController::class, 'index']);
+Route::get('/', [ViajeController::class, 'index'])->name('reserva.index');
+
+Route::get('viaje/reservaExitosa', [ViajeController::class, 'reservaExitosa']);
 
 Route::get('viaje/obtenerOrigen/{id}', [ViajeController::class, 'obtenerOrigen']);
 

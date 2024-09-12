@@ -12,7 +12,7 @@ class DestinoController extends Controller
         try {
             
             $destinos = Destino::select('id_destino as iIdDestino', 'destino as sNombre',DB::raw("CONCAT('Calle ',tblD.calle,' ',tblD.num_ext,', ',tblD.colonia,', ',tblD.cp,' ',tblD.ciudad) as sDireccion"))
-            ->join("tbl_direcciones as tblD","tblD.id_direccion","=","tbl_destinos.direccion_id")
+            ->leftJoin("tbl_direcciones as tblD","tblD.id_direccion","=","tbl_destinos.direccion_id")
             ->get();
             return [ 'ok' => true, "data" => $destinos ];
             
