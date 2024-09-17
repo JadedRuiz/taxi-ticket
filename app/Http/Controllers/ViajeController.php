@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use App\Models\ViajeModel as Viaje;
 use App\Models\DetViajeModel as DetViaje;
 use App\Models\DestinoModel as Destino;
-use Illuminate\Support\Facades\DB;
+use App\Exports\TicketExport as Ticket;
 
 class ViajeController extends Controller
 {
@@ -66,6 +67,20 @@ class ViajeController extends Controller
             Mail::send('plantillas/ticket_correo', compact('viaje','det_viaje',"destino","origen"), function ($message) use ($res){
                 $message->subject('Reservas - Mi taxi');
                 $message->to($res["sCorreo"],$res["sNombre"]);     
+            });
+
+            //Generamos el PDF en B64
+            try {
+                $pdf_b64= Ticket::generarTicket($viaje, $det_viaje, $destino, $origen);
+            }catch(\Exception $e) {
+                return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
+            }
+
+            //Enviar Correo al interesado
+            Mail::send('plantillas/ticket_correo', compact('viaje','det_viaje',"destino","origen"), function ($message) use ($res, $pdf_b64, $folio){
+                $message->subject('Reserva Folio '.$folio.'| Mi taxi');
+                $message->to(getenv('MAIL_ADMIN'), 'Administrador Plataforma'); 
+                $message->attachData(base64_decode($pdf_b64),date('d/m/Y')."-Reserva|Mi taxi.pdf");    
             });
 
             return ['ok' => true, "data" => "Registro Exitoso"];

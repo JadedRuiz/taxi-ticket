@@ -17,7 +17,7 @@
                 <p class="title-reserva">¡Su reserva se ha realizado exitosamente!</p>
             </div>
             <div class="col-12 mt-5">
-                <p class="subtitle-reserva">La información de su reserva fue enviado al correo electrónico proporcionado.</p>
+                <p class="subtitle-reserva">La información de su reserva fue enviada al correo electrónico proporcionado.</p>
             </div>
         </div>
         <div class="tabs d-flex flex-row justify-content-center py-3">
