@@ -1,0 +1,83 @@
+body {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 14.4px;
+    font-weight: 300;
+    font-style: normal; 
+    background-color: #22458b2f;
+}
+.section-login {
+    min-height: 98vh;
+    height: auto;
+    max-height: 100vh;
+}
+.card {
+    width: 400px;
+}
+.text-primary {
+    color: #22458B !important;
+}
+.btn-primary {
+    color: #fff !important;
+    background-color: #22458B !important;
+    border-color: #22458B !important;
+}
+.btn-primary:hover {
+    color: #fff !important;
+    background-color: #4d62c5 !important;
+    border-color: #495cba !important;
+}
+.w-sm {
+    min-width: 95px;
+}
+.waves-effect {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.logo-img {
+    width: 350px;
+}
+a {
+    text-decoration: none !important;
+}
+a, button {
+    outline: none !important;
+}
+label {
+    font-weight: 500;
+}
+.alert-dir {
+    text-align: start;
+    width: 90%;
+    color: #ff0606;
+    font-size: 14.4px;
+    font-weight: bold !important;
+}
+#btn-loading {
+    display: inline-flex;
+    align-items: center;
+    background-color: #636668 !important;
+    border-color: #636668 !important;
+    cursor: auto;
+}
+#btn-loading .spinner-border {
+    height: 20px;
+    width: 20px;
+}
+.loading-text {
+    margin-left: 5px;
+}
+@media only screen and (max-width: 575px){
+    .card {
+        width: 98% !important;
+    }
+    .logo-img {
+        width: 300px;
+    }
+}

@@ -13,6 +13,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "datatables.net-dt": "^2.1.6",
         "jquery": "^3.7.1"
     }
 }

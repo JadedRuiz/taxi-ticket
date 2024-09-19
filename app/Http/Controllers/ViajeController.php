@@ -13,7 +13,7 @@ use App\Exports\TicketExport as Ticket;
 class ViajeController extends Controller
 {
     function index() {
-        return view('viaje');
+        return view('Viaje');
     }
 
     function obtenerOrigen($id) {
