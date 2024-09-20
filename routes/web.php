@@ -29,3 +29,5 @@ Route::post('admin/entrar', [AdminController::class, 'login'])->name("admin.logi
 Route::post('admin/generarTicket', [AdminController::class, 'generarTicket'])->name("admin.generar");;
 
 Route::post('admin/encrypt', [AdminController::class, 'encriptar']);
+
+Route::post('admin/webHookMyRide/{id_empresa}',[AdminController::class, 'webHookMyRide']);

@@ -6,11 +6,12 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 
 class TicketExport {
 
-    public static function generarTicket($viaje, $det_viaje, $destino, $origen) {
+    public static function generarTicket($viaje, $det_viaje, $destino, $origen, $empresa) {
         $pdf = new Fpdf('P','mm', array(80,140));
         $pdf->AddPage();
         //Imagen
-        $pdf->Image(public_path('img')."/futv-logo-vertical.png",5,5,40,15,'PNG','');
+        $img_logo = str_replace('/img','',$empresa->logo_path);
+        $pdf->Image(public_path('img').$img_logo,5,5,40,15,'PNG','');
         //Importamos los fonts
         $pdf->AddFont('Raleway-Bold','','Raleway-Bold.php', public_path('fonts'));
         $pdf->AddFont('Raleway-Regular','','Raleway-Regular.php', public_path('fonts'));
@@ -28,25 +29,25 @@ class TicketExport {
             $pdf->SetFont('Raleway-Regular', '', 7);
             $pdf->setXY(5,28);
             $pdf->Cell(30,4,"Titulo",0,0,"L");
-            $pdf->Cell(40,4,"Viaje Reservado",0,0,"L");
+            $pdf->Cell(40,4,$viaje->nombre_viaje,0,0,"L");
             $pdf->setXY(5,31);
             $pdf->Cell(30,4,"Estatus",0,0,"L");
-            $pdf->Cell(40,4,"Pendiente",0,0,"L");
+            $pdf->Cell(40,4,$viaje->status,0,0,"L");
             $pdf->setXY(5,34);
             $pdf->Cell(30,4,"Tipo de servicio",0,0,"L");
-            $pdf->Cell(40,4,"TAXI SEGURO ADO",0,0,"L");
+            $pdf->Cell(40,4,$viaje->tipo_servicio,0,0,"L");
             $pdf->setXY(5,37);
             $pdf->Cell(30,4,"Tipo de viaje",0,0,"L");
-            $pdf->Cell(40,4,"Viaje Sencillo",0,0,"L");
+            $pdf->Cell(40,4,$viaje->tipo_viaje,0,0,"L");
             $pdf->setXY(5,40);
             $pdf->Cell(30,4,"Fecha y hora de reserva",0,0,"L");
-            $pdf->Cell(40,4,date('d-m-Y H:m:s'),0,0,"L");
+            $pdf->Cell(40,4,$viaje->date_creacion,0,0,"L");
             $pdf->setXY(5,43);
             $pdf->Cell(30,4,"Costo del servicio",0,0,"L");
             $pdf->Cell(40,4,"$".number_format($destino->precio,2),0,0,"L");
             $pdf->setXY(5,46);
             $pdf->Cell(30,4,"Distancia",0,0,"L");
-            $pdf->Cell(40,4,$destino->distancia,0,0,"L");
+            $pdf->Cell(40,4,$destino->distancia > 0 ? $destino->distancia." Km" : $destino->distancia ,0,0,"L");
             $pdf->setXY(5,49);
             $pdf->Cell(30,4,"Duracion",0,0,"L");
             $pdf->Cell(40,4,$destino->duracion,0,0,"L");
@@ -79,13 +80,13 @@ class TicketExport {
             $pdf->SetFont('Raleway-Regular', '', 7);
             $pdf->setXY(5,79);
             $pdf->Cell(30,4,"Marca y Tipo",0,0,"L");
-            $pdf->Cell(40,4,"Por asignar",0,0,"L");
+            $pdf->Cell(40,4,$det_viaje->vehiculo,0,0,"L");
             $pdf->setXY(5,82);
             $pdf->Cell(30,4,"No. max de maletas",0,0,"L");
-            $pdf->Cell(40,4,"4",0,0,"L");
+            $pdf->Cell(40,4,$det_viaje->no_maletas,0,0,"L");
             $pdf->setXY(5,85);
             $pdf->Cell(30,4,"No. max de pasajeros",0,0,"L");
-            $pdf->Cell(40,4,"4",0,0,"L");
+            $pdf->Cell(40,4,$det_viaje->no_pasajeros,0,0,"L");
         #endregion
         #region [Titulo Det Cliente]
             $pdf->SetFont('Raleway-Bold', '', 8);
@@ -117,7 +118,7 @@ class TicketExport {
             $pdf->SetFont('Raleway-Regular', '', 7);
             $pdf->setXY(5,115);
             $pdf->Cell(30,4,"Pago",0,0,"L");
-            $pdf->Cell(40,4,"Efectivo",0,0,"L");
+            $pdf->Cell(40,4,$det_viaje->tipo_pago,0,0,"L");
         #endregion
         return base64_encode($pdf->Output('S','ticket.pdf'));
     }

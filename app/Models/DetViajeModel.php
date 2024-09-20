@@ -14,8 +14,8 @@ class DetViajeModel extends Model
 
     protected $fillable= [
         'viaje_id', 
-        'origen', 
-        'destino', 
+        'origen_id', 
+        'destino_id', 
         'vehiculo', 
         'no_maletas', 
         'no_pasajeros', 

@@ -13,6 +13,7 @@ class ViajeModel extends Model
     public $incrementing = true;
 
     protected $fillable= [
+        'empresa_id',
         'folio',
         'nombre_viaje',
         'status', 

@@ -3,6 +3,10 @@ import $ from 'jquery';
 
 $(window).on("load", function() {
     new DataTable('#datatable', {
+        order: [[4, "desc"]],
+        columnDefs: [
+            { targets: [0,1,2,3,5], orderable: false}
+        ],
         pagingType: "simple_numbers",
         language: {
             "decimal": "",

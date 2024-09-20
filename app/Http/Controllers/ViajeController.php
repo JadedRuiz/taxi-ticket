@@ -36,9 +36,10 @@ class ViajeController extends Controller
 
             //Insertamos el viaje
             $viaje = Viaje::create([
+                "empresa_id" => 1,
                 "folio" => $folio,
                 "nombre_viaje" => "Viaje Reservado",
-                "status" => 1, //Pendiente
+                "status" => "Pendiente", //Pendiente
                 "tipo_servicio" => "TAXI SEGURO ADO",
                 "tipo_viaje" => "Viaje Sencillo",
                 "date_creacion" => date('Y-m-d h:m:s'),
@@ -47,8 +48,8 @@ class ViajeController extends Controller
 
             $det_viaje= DetViaje::create([
                 "viaje_id" => $viaje->id_viaje,
-                "origen" => $res["iIdOrigen"],
-                "destino" => $res["iIdDestino"],
+                "origen_id" => $res["iIdOrigen"],
+                "destino_id" => $res["iIdDestino"],
                 "vehiculo" => "",
                 "no_maletas" => 4,
                 "no_pasajeros" => 4,
@@ -67,20 +68,6 @@ class ViajeController extends Controller
             Mail::send('plantillas/ticket_correo', compact('viaje','det_viaje',"destino","origen"), function ($message) use ($res){
                 $message->subject('Reservas - Mi taxi');
                 $message->to($res["sCorreo"],$res["sNombre"]);     
-            });
-
-            //Generamos el PDF en B64
-            try {
-                $pdf_b64= Ticket::generarTicket($viaje, $det_viaje, $destino, $origen);
-            }catch(\Exception $e) {
-                return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
-            }
-
-            //Enviar Correo al interesado
-            Mail::send('plantillas/ticket_correo', compact('viaje','det_viaje',"destino","origen"), function ($message) use ($res, $pdf_b64, $folio){
-                $message->subject('Reserva Folio '.$folio.'| Mi taxi');
-                $message->to(getenv('MAIL_ADMIN'), 'Administrador Plataforma'); 
-                $message->attachData(base64_decode($pdf_b64),date('d/m/Y')."-Reserva|Mi taxi.pdf");    
             });
 
             return ['ok' => true, "data" => "Registro Exitoso"];
