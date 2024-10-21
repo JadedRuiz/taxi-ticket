@@ -17,15 +17,13 @@ class AdminController extends Controller
     function index() {
         if(session()->has('data-user')) {
             $user = json_decode($this->decode_json(session('data-user')));
-            $validar_empresa= DB::table("tbl_empresas")->select("webhook")->where("id_empresa",$user->id_empresa)->first();
-
-            if($validar_empresa && $validar_empresa->webhook){
+            if($user->webhook){
                 $reservaciones = DB::table("tbl_viajes as tblV")
                 ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio")
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
-                ->where("tblv.empresa_id",$user->id_empresa)
+                ->where("tblV.empresa_id",$user->id_empresa)
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
             }else{
@@ -34,12 +32,12 @@ class AdminController extends Controller
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_destinos as tblD","tblD.id_destino","=","dtV.destino_id")
                 ->leftJoin("tbl_origenes as tblO","tblO.id_origen","=","dtV.origen_id")
-                ->where("tblv.empresa_id",$user->id_empresa)
+                ->where("tblV.empresa_id",$user->id_empresa)
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
             }
-            
-            return view('admin/Home', compact('user','reservaciones'));
+            $entries = ['public/js/admin.js'];
+            return view('admin/Home', compact('user','reservaciones','entries'));
         }
         return view('admin/template/Login');
     }
@@ -47,7 +45,7 @@ class AdminController extends Controller
     public function login(Request $body) {
         try {
             $user = DB::table("tbl_usuarios as tblU")
-            ->select("usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path")
+            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook")
             ->leftJoin("tbl_empresas as tblE","tblE.id_empresa","=","tblU.empresa_id")
             ->where("usuario",$body["usuario"])
             ->where("tblU.activo",1)
@@ -55,7 +53,23 @@ class AdminController extends Controller
 
             if($user) {
                 if($this->decode_json($user->password) == $body["pass"]) {
-                    Session::put("data-user",$this->encode_json(json_encode($user)));
+                    $menu = DB::table("rel_menu_usuario as rMU")
+                    ->select("tblM.titulo", "tblM.icono", "tblM.ruta",)
+                    ->join("tbl_menu as tblM","tblM.id_menu","=","rMU.menu_id")
+                    ->where("tblM.activo",1)
+                    ->where("rMU.usuario_id",$user->id_usuario)
+                    ->get();
+                    $user_data = [
+                        "id_usuario" => $user->id_usuario,
+                        "usuario" => $user->usuario,
+                        "nombre" => $user->nombre,
+                        "id_empresa" => $user->id_empresa,
+                        "webhook" => $user->webhook,
+                        "empresa" => $user->empresa,
+                        "logo_path" => $user->logo_path,
+                        "menu" => $menu
+                    ];                    
+                    Session::put("data-user",$this->encode_json(json_encode($user_data)));
                     return ["ok" => true, "data" => "Logueo Exitoso"];
                 }
                 return ["ok" => false, "message" => "E-AD-001 : Contraseña invalida"];

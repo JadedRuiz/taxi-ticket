@@ -44,13 +44,18 @@ class TicketExport {
             $pdf->Cell(40,4,$viaje->date_creacion,0,0,"L");
             $pdf->setXY(5,43);
             $pdf->Cell(30,4,"Costo del servicio",0,0,"L");
-            $pdf->Cell(40,4,"$".number_format($destino->precio,2),0,0,"L");
+            $pdf->Cell(40,4,"$".number_format($destino->precio ?? '0.00',2),0,0,"L");
             $pdf->setXY(5,46);
             $pdf->Cell(30,4,"Distancia",0,0,"L");
-            $pdf->Cell(40,4,$destino->distancia > 0 ? $destino->distancia." Km" : $destino->distancia ,0,0,"L");
+            if(isset($destino->distancia)){
+                $pdf->Cell(40,4,$destino->distancia > 0 ? $destino->distancia." Km" : $destino->distancia ,0,0,"L");
+            }else {
+                $pdf->Cell(40,4,"0 Km" ,0,0,"L");
+            }
+            
             $pdf->setXY(5,49);
             $pdf->Cell(30,4,"Duracion",0,0,"L");
-            $pdf->Cell(40,4,$destino->duracion,0,0,"L");
+            $pdf->Cell(40,4,$destino->duracion ?? '0:00',0,0,"L");
             $pdf->setXY(5,52);
             $pdf->Cell(30,4,"Comentarios",0,0,"L");
             $pdf->Cell(40,4,$viaje->comentarios,0,0,"L");
@@ -63,11 +68,13 @@ class TicketExport {
             $pdf->Cell(70,0.05,"",0,0,"",1);
         #endregion
         #region [Cuerpo Itinerario]
+        if(isset($destino) && isset($origen)){
             $pdf->SetFont('Raleway-Regular', '', 7);
             $pdf->setXY(5,64);
             $pdf->Cell(70,4,"1. ".$origen->origen,0,0,"L");
             $pdf->setXY(5,67);
             $pdf->Cell(70,4,"2. ".$destino->destino,0,0,"L");
+        }            
         #endregion
         #region [Titulo Vehiculo]
             $pdf->SetFont('Raleway-Bold', '', 8);

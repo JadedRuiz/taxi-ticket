@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\VehiculosController;
 
 Route::get('/', [ViajeController::class, 'index'])->name('reserva.index');
 
@@ -13,12 +14,16 @@ Route::get('viaje/obtenerOrigen/{id}', [ViajeController::class, 'obtenerOrigen']
 
 Route::post('viaje/reservar', [ViajeController::class, 'viajeMiTaxi']);
 
-Route::get('viaje/obtenerDestinos', [DestinoController::class, 'index']);
+Route::get('viaje/obtenerDestinos', [DestinoController::class, 'obtenerDestinos']);
 
 Route::get('viaje/obtenerDestinoId/{id}', [DestinoController::class, 'obtenerDestinoId']);
 
 //Routes Admin
 Route::get('admin/home', [AdminController::class, 'index'])->name('admin.home');
+
+Route::get('admin/destinos', [DestinoController::class, 'index'])->name('admin.destinos');
+
+Route::get('admin/vehiculos', [VehiculosController::class, 'index'])->name('admin.vehiculos');
 
 Route::get('login', [AdminController::class, 'index']);
 
@@ -31,3 +36,7 @@ Route::post('admin/generarTicket', [AdminController::class, 'generarTicket'])->n
 Route::post('admin/encrypt', [AdminController::class, 'encriptar']);
 
 Route::post('admin/webHookMyRide/{id_empresa}',[AdminController::class, 'webHookMyRide']);
+
+Route::post('admin/obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('admin.getDestinoId');
+
+Route::post('admin/guardarDestino', [DestinoController::class, 'guardarDestino'])->name('admin.guardarDestino');

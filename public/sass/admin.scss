@@ -3,6 +3,13 @@ body {
     font-size: 14.4px;
     font-weight: 300;
     font-style: normal;
+    background-color: #F7F7F9;
+}
+.modal p, .modal label, .modal button {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 14.4px;
+    font-weight: 300;
+    font-style: normal;
 }
 #page-topbar {
     box-shadow: none;
@@ -35,19 +42,6 @@ body {
 .info-dropdown span i {
     font-size: 10px;
 }
-.uil--sign-out-alt {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='m12.59 13l-2.3 2.29a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0l4-4a1 1 0 0 0 .21-.33a1 1 0 0 0 0-.76a1 1 0 0 0-.21-.33l-4-4a1 1 0 1 0-1.42 1.42l2.3 2.29H3a1 1 0 0 0 0 2ZM12 2a10 10 0 0 0-9 5.55a1 1 0 0 0 1.8.9A8 8 0 1 1 12 20a7.93 7.93 0 0 1-7.16-4.45a1 1 0 0 0-1.8.9A10 10 0 1 0 12 2'/%3E%3C/svg%3E");
-    background-color: currentColor;
-    -webkit-mask-image: var(--svg);
-    mask-image: var(--svg);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-}
 .top-nav {
     margin: 0 auto;
     padding: 0 .625rem;
@@ -66,19 +60,6 @@ body {
 }
 .nav-link.active {
     color: #5b73e8 !important;
-}
-.uil--home-alt {
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='m20 8l-6-5.26a3 3 0 0 0-4 0L4 8a3 3 0 0 0-1 2.26V19a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-8.75A3 3 0 0 0 20 8m-6 12h-4v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Zm5-1a1 1 0 0 1-1 1h-2v-5a3 3 0 0 0-3-3h-2a3 3 0 0 0-3 3v5H6a1 1 0 0 1-1-1v-8.75a1 1 0 0 1 .34-.75l6-5.25a1 1 0 0 1 1.32 0l6 5.25a1 1 0 0 1 .34.75Z'/%3E%3C/svg%3E");
-    background-color: currentColor;
-    -webkit-mask-image: var(--svg);
-    mask-image: var(--svg);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
 }
 .contenido {
     background-color: #f5f6f8d5;
@@ -124,7 +105,7 @@ body {
 }
 .card-title-desc {
     color: #74788d;
-    margin-bottom: 24px !important;
+    margin-bottom: 0px !important;
 }
 .table {
     --bs-table-bg: transparent;

@@ -1,11 +1,12 @@
 import DataTable from 'datatables.net-dt';
 import $ from 'jquery';
 
+
 $(window).on("load", function() {
     new DataTable('#datatable', {
-        order: [[4, ""]],
+        order: [[1, "asc"]],
         columnDefs: [
-            { targets: [0,1,2,3,5], orderable: false}
+            { targets: [0,2,3,4,5,6], orderable: false}
         ],
         pagingType: "simple_numbers",
         language: {
@@ -30,14 +31,10 @@ $(window).on("load", function() {
         }
     });
 })
-$(document).on("click",".btnTicket", function() {
-    let id_viaje= $(this).attr("data-attr");
-    $.post(window.routes.generarTicket,{
-        id_viaje: id_viaje
-    }, (res) => {
-        if(res.ok) {
-            $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
-            $(".btnModal").click();
-        }
-    });    
-})
+
+// Nuevo Vehiculo
+$(document).on("click",".btnAdd", function() {
+    // resetearFormulario();
+    $(".modal-title").text("Agregar nuevo Vehiculo");
+    $(".btnModal").click(); 
+});
