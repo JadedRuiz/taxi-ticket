@@ -6,14 +6,15 @@ export default defineConfig({
         laravel({
             input: [
                 'public/sass/app.scss', 
-                'public/js/app.js', 
                 'public/sass/viaje.scss', 
-                'public/js/viaje.js',
                 'public/sass/login.scss',
-                'public/js/login.js',
-                'public/sass/admin.scss',                
+                'public/sass/admin.scss', 
+                'public/js/app.js', 
+                'public/js/viaje.js', 
+                'public/js/login.js',              
                 'public/js/admin.js',               
                 'public/js/destino.js',
+                'public/js/vehiculo.js'
             ],
             refresh: true,
         }),

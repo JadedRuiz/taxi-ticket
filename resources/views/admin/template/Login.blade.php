@@ -67,7 +67,7 @@
 </body>
 <script>
   window.routes = {
-    'login' : '{{ route('admin.login') }}',
+    'login' : '{{ route('auth.login') }}',
     'home' : '{{ route('admin.home') }}'
   }
  

@@ -142,4 +142,12 @@
             </div>
         </div>
     </div>
+    <x-slot name="scripts">
+        <script>
+            window.routes = {
+                'getDestinoId' : '{{ route('admin.api.getDestinoId') }}',
+                'guardarDestino' : '{{ route('admin.api.guardarDestino') }}'
+            }
+        </script>
+    </x-slot>
 </x-layout>

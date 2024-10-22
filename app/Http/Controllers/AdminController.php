@@ -36,7 +36,7 @@ class AdminController extends Controller
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
             }
-            $entries = ['public/js/admin.js'];
+            $entries = ['public/js/admin.js','public/sass/admin.scss'];
             return view('admin/Home', compact('user','reservaciones','entries'));
         }
         return view('admin/template/Login');

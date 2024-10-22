@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo</title>
     
-    @vite(['public/sass/app.scss','public/js/app.js','public/sass/admin.scss'])
+    @vite(['public/sass/app.scss','public/js/app.js'])
     @isset($entries)
         @vite($entries)  
     @endisset
@@ -40,7 +40,7 @@
                     </div>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.logout') }}">
+                            <a class="dropdown-item d-flex align-items-center" href="{{ route('auth.logout') }}">
                                 <span class="uil--sign-out-alt"></span>
                                 &nbsp; Cerrar sesión
                             </a>
@@ -74,12 +74,7 @@
     <section class="contenido">
         {{ $slot }}
     </section>
-    <script>
-        window.routes = {
-            'generarTicket' : '{{ route('admin.generar') }}',
-            'getDestinoId' : '{{ route('admin.getDestinoId') }}',
-            'guardarDestino' : '{{ route('admin.guardarDestino') }}'
-        }
-    </script>
+    
+    {{ $scripts }}
 </body>
 </html>

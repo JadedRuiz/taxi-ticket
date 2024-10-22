@@ -74,4 +74,11 @@
             </div>
         </div>
     </div>
-</x-layout>
+    <x-slot name="scripts">
+        <script>
+            window.routes = {
+                'generarTicket' : '{{ route('admin.api.generar') }}'
+            }
+        </script>
+    </x-slot> 
+</x-layout>  

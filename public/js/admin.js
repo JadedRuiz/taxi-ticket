@@ -29,15 +29,16 @@ $(window).on("load", function() {
             }
         }
     });
-})
-$(document).on("click",".btnTicket", function() {
-    let id_viaje= $(this).attr("data-attr");
-    $.post(window.routes.generarTicket,{
-        id_viaje: id_viaje
-    }, (res) => {
-        if(res.ok) {
-            $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
-            $(".btnModal").click();
-        }
-    });    
+
+    $(document).on("click",".btnTicket", function() {
+        let id_viaje= $(this).attr("data-attr");
+        $.post(window.routes.generarTicket,{
+            id_viaje: id_viaje
+        }, (res) => {
+            if(res.ok) {
+                $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
+                $(".btnModal").click();
+            }
+        });    
+    })
 })

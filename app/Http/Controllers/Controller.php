@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
+
+    public function resetearId($table,$id) {
+        $maxId = DB::table($table)->max($id);
+        DB::statement("ALTER TABLE $table AUTO_INCREMENT=$maxId");
+    }
     function decode_json($code) {
         $ultimoCharacter = substr($code,-1);
         $restante = substr($code,0,-1);
@@ -21,6 +26,7 @@ abstract class Controller
         $resu = $descrypt.$cola.$ultimoCharacter;
         return base64_decode($resu);
     }
+
     public function encode_json($code){
         $rand = rand(3,9);
         $base_64 = base64_encode($code);
@@ -128,6 +134,7 @@ abstract class Controller
             }
         }
     }
+    
     public static function Utf8_ansi($valor='') {
         $utf8_ansi2 = array(
         "\u00c0" =>"À",
