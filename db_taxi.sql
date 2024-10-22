@@ -1,8 +1,8 @@
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
--- Host: localhost    Database: db_taxi
+-- Host: 127.0.0.1    Database: db_taxi
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.3.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -366,10 +366,10 @@ DROP TABLE IF EXISTS `tbl_vehiculos`;
 CREATE TABLE `tbl_vehiculos` (
   `id_vehiculo` int NOT NULL AUTO_INCREMENT,
   `fotografia_id` int DEFAULT NULL,
-  `vehiculo` varchar(500) DEFAULT NULL,
-  `marca` varchar(150) DEFAULT NULL,
+  `vehiculo` varchar(200) DEFAULT NULL,
+  `marca` varchar(200) DEFAULT NULL,
   `modelo` varchar(150) DEFAULT NULL,
-  `placa` varchar(150) DEFAULT NULL,
+  `placa` varchar(10) DEFAULT NULL,
   `no_serie` varchar(100) DEFAULT NULL,
   `aseguradora` varchar(100) DEFAULT NULL,
   `poliza` varchar(100) DEFAULT NULL,
@@ -378,7 +378,7 @@ CREATE TABLE `tbl_vehiculos` (
   `dtCreacion` datetime DEFAULT NULL,
   `activo` int DEFAULT NULL,
   PRIMARY KEY (`id_vehiculo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -387,6 +387,7 @@ CREATE TABLE `tbl_vehiculos` (
 
 LOCK TABLES `tbl_vehiculos` WRITE;
 /*!40000 ALTER TABLE `tbl_vehiculos` DISABLE KEYS */;
+INSERT INTO `tbl_vehiculos` VALUES (2,NULL,'tsuru','nissan','2005','y-992-12a','55852366','axxa','8737','2024-10-10','esto es una nota de texto',NULL,NULL),(3,NULL,'TSURU III','NISSAN','2005','Y-AAY-234','934718','AXXA','9934810','2024-10-11','AQUI VA LA NOTA',NULL,NULL);
 /*!40000 ALTER TABLE `tbl_vehiculos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -430,4 +431,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-21 20:38:01
+-- Dump completed on 2024-10-22 15:46:01
