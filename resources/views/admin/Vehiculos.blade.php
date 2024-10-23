@@ -39,7 +39,13 @@
                                             @foreach($vehiculos["data"] as $vehiculo)
                                               <tr>
                                                 <td>
-                                                  <img src="https://img.freepik.com/psd-gratis/coche-plata-sedan_53876-84522.jpg?w=1060&t=st=1729631274~exp=1729631874~hmac=075754f8fdad589dca9447536fae57345eaba4a4caba2d2d3e945cbb34d3f520" width="60" height="50">
+                                                  @if($vehiculo->namespace == "image") 
+                                                    <img src="{{ asset($vehiculo->path) }}" width="60" height="50">
+                                                  @elseif($vehiculo->namespace == "url")
+                                                    <img src="{{ $vehiculo->path }}" width="60" height="50">
+                                                  @else
+                                                    <img src="{{ asset('/img/Image_not_available.png') }}" width="80" height="50">
+                                                  @endif
                                                 </td>
                                                 <td>{{ $vehiculo->vehiculo }}</td>
                                                 <td>{{ $vehiculo->marca }} ({{ $vehiculo->modelo }})</td>
@@ -78,14 +84,15 @@
                     <button type="button" class="btn-close btnModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row needs-validation" id="form-vehiculo" novalidate>
+                    <form id="form-vehiculo" enctype="multipart/form-data" class="row needs-validation" novalidate>
                       <div class="form-group col-12">
                         <label for="fotografia">Fotografia</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                           <input type="text" class="form-control" placeholder="Ingrese URL o Adjunte" id="fotografia">
                           <input type="file" class="d-none" id="inpAdj" accept="image/png, image/jpeg, image/jpg">
                           <button class="btn btn-outline-secondary" type="button" id="btnAdj">Adjuntar</button>
                         </div>
+                        <small class="text-warning">Tamaño máximo aceptado (5M)</small>
                         <!-- <input type="text" class="form-control t-upper" id="fotografia" maxlength="500" placeholder="Ingrese el vehiculo"> -->
                       </div>
                       <div class="form-group col-lg-4 col-sm-12">
@@ -131,9 +138,7 @@
                       </button>
                     </div>
                     <div class="row mt-1 mb-0">
-                      <div class="alert alert-danger w-100" role="alert" id="alert-form" style="display:none;">
-                        This is a danger alert—check it out!
-                      </div>
+                      <div class="alert w-100" role="alert" id="alert-form" style="display:none;"></div>
                     </div>
                 </div>
             </div>

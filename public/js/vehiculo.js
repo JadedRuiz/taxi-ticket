@@ -1,5 +1,6 @@
 import DataTable from 'datatables.net-dt';
 import $ from 'jquery';
+import Swal from 'sweetalert2';
 
 
 $(window).on("load", function() {
@@ -43,17 +44,30 @@ $(document).on("click", ".btnAdd", function() {
 $(document).on("click", "#btnSave", function() {
     var form = document.querySelector('.needs-validation');
     if (form.checkValidity()) {
-        let json = {};
+        var formdata = new FormData();
         $("#form-vehiculo input").each(function() {
-            json[this.id] = (this.value+"").toUpperCase();
+            formdata.append(this.id, this.value);
         });
-        json["notas"] = $("#notas").val().toUpperCase();
-        $.post(window.routes.guardarVehiculo, json)
-        .done((res) => {
-            console.log(res);
-        })
-        .fail((xhr) => {
-            alerta(xhr.responseJSON.message);
+        formdata.append("notas", $("#notas").val());
+        formdata.append("image", $('#inpAdj')[0].files[0] ?? '');
+        $.ajax({
+            url: window.routes.guardarVehiculo,
+            method: 'POST',
+            data: formdata,
+            contentType: false,
+            processData: false,
+            success: (res) => {
+                resetearFormularioVehiculos();
+                $(".btnModalClose").click();
+                Swal.fire({
+                    title: "Buen trabajo!",
+                    text: "Datos registrados con exito",
+                    icon: "success"
+                });
+            },
+            error: (xhr) => {
+                alerta(xhr.responseJSON.message,'alert-danger');
+            }
         });
     }
     form.classList.add('was-validated')
@@ -64,14 +78,31 @@ $(document).on("click","#btnAdj", function() {
     $("#inpAdj").click();
 });
 
+//Validacion de tamñao de la imagen
 $(document).on("change","#inpAdj", function(e) {
+    let image_size = $('#inpAdj')[0].files[0].size / 1024;
+    if(image_size > 5000) {
+        alerta("La imagen no cumple con el tamaño",'alert-danger');
+        $('#inpAdj').val("");
+        $("#fotografia").val("");
+        return;
+    }
     $("#fotografia").val(e.target.files[0].name);
 });
 
-function alerta(message) {
+//Metodo para mostrar alerta
+function alerta(message, classname) {
     $("#alert-form").html(message);
+    $("#alert-form").addClass(classname);
     $("#alert-form").show("d-none");
     setTimeout(()=> {
         $("#alert-form").hide("d-none");
     },5000);
+}
+
+function resetearFormularioVehiculos() {
+    $("#form-vehiculo input").each(function() {
+        $(this).val("");
+    });
+    $("#notas").val("")
 }

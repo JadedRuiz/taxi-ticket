@@ -6,7 +6,7 @@ abstract class Controller
 {
 
     public function resetearId($table,$id) {
-        $maxId = DB::table($table)->max($id);
+        // $maxId = DB::table($table)->latest()->first()->;
         DB::statement("ALTER TABLE $table AUTO_INCREMENT=$maxId");
     }
     function decode_json($code) {
