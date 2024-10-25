@@ -19,3 +19,29 @@
 ::placeholder { /* Recent browsers */
     text-transform: none;
 }
+#btnSave .spinner-border {
+    height: 15px;
+    width: 15px;
+}
+.btn-disabled {
+    background-color: #636668 !important;
+    border-color: #636668 !important;
+    color: white !important;
+}
+.modal-header {
+    align-items: start !important;
+}
+.card {
+    box-shadow: 0 2px 4px rgb(15 34 58 / 49%) !important;
+    margin-bottom: 0px !important;
+}
+.lstOperadores {
+    height: auto;
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 0px 12px;
+}
+.txtTitle {
+    font-size: 14.4px !important;
+    font-weight: bold !important;
+}

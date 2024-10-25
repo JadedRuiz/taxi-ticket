@@ -1,5 +1,12 @@
 import $ from 'jquery';
 
+$(window).on("keydown", function(event) {
+    if(event.key == "Enter") {
+        event.preventDefault();
+        $("#submitForm").click();
+    }
+});
+
 $(document).on("click","#submitForm", (event) => {
     event.preventDefault();
     clearTimeout();

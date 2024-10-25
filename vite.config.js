@@ -14,7 +14,8 @@ export default defineConfig({
                 'public/js/login.js',              
                 'public/js/admin.js',               
                 'public/js/destino.js',
-                'public/js/vehiculo.js'
+                'public/js/vehiculo.js',
+                'public/js/operador.js',
             ],
             refresh: true,
         }),

@@ -2,7 +2,6 @@ import DataTable from 'datatables.net-dt';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 
-
 $(window).on("load", function() {
     new DataTable('#datatable', {
         order: [[1, "asc"]],
@@ -35,13 +34,41 @@ $(window).on("load", function() {
 
 // Nuevo Vehiculo
 $(document).on("click", ".btnAdd", function() {
-    // resetearFormulario();
+    resetearFormularioVehiculos();
+    $("#id_vehiculo").val(0);
     $(".modal-title").text("Agregar nuevo Vehiculo");
     $(".btnModal").click(); 
 });
 
+//Editar Vehiculo
+$(document).on("click", ".editVehiculo", function() {
+    let id = $(this).attr("data-attr");
+    $(".modal-title").text("Editar Vehiculo");
+    $.post(window.routes.getVehiculoId,{ id: id }, (res) => {
+        if(res.ok) {
+            $(".btnModal").click();
+            for(var key in res.data) {
+                if($("#"+key).length) {
+                    $("#"+key).val(res.data[key]);
+                }
+            };
+            return;
+        }
+        Swal.fire({
+            title: "Ha ocurrido un error!",
+            text: res.message,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 3000
+        });
+    });
+    
+
+});
+
 //Guardar Vehiculo
 $(document).on("click", "#btnSave", function() {
+    botonGuardarAsync();
     var form = document.querySelector('.needs-validation');
     if (form.checkValidity()) {
         var formdata = new FormData();
@@ -57,19 +84,34 @@ $(document).on("click", "#btnSave", function() {
             contentType: false,
             processData: false,
             success: (res) => {
-                resetearFormularioVehiculos();
-                $(".btnModalClose").click();
-                Swal.fire({
-                    title: "Buen trabajo!",
-                    text: "Datos registrados con exito",
-                    icon: "success"
-                });
+                if(res.ok) {
+                    resetearFormularioVehiculos();
+                    botonGuardarAsync(1);
+                    $(".btnModalClose").click();
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: res.data,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then((result) => {
+                        /* Read more about handling dismissals below */
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            location.reload();
+                        }
+                    });
+                    return;
+                }
+                botonGuardarAsync(1);
+                alerta(res.message,'alert-danger');
             },
             error: (xhr) => {
+                botonGuardarAsync(1);
                 alerta(xhr.responseJSON.message,'alert-danger');
             }
         });
     }
+    botonGuardarAsync(1);
     form.classList.add('was-validated')
 })
 
@@ -90,7 +132,7 @@ $(document).on("change","#inpAdj", function(e) {
     $("#fotografia").val(e.target.files[0].name);
 });
 
-//Metodo para mostrar alerta
+//Funciones genericas
 function alerta(message, classname) {
     $("#alert-form").html(message);
     $("#alert-form").addClass(classname);
@@ -104,5 +146,22 @@ function resetearFormularioVehiculos() {
     $("#form-vehiculo input").each(function() {
         $(this).val("");
     });
+    $("#form-vehiculo").removeClass('was-validated');
     $("#notas").val("")
+}
+
+function botonGuardarAsync(tipo = 0) {
+    if(tipo == 1) {
+        $(".spiner-loading").addClass("d-none");
+        $(".fa-floppy-o").removeClass("d-none");
+        $(".loading-text").val("Guardar");
+        $("#btnSave").removeClass("btn-disabled");
+        $("#btnSave").removeAttr("disabled");
+        return;
+    }
+    $(".spiner-loading").removeClass("d-none");
+    $(".fa-floppy-o").addClass("d-none");
+    $(".loading-text").val("Guardando...");
+    $("#btnSave").addClass("btn-disabled");
+    $("#btnSave").attr("disabled",true);
 }
