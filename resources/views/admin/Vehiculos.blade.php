@@ -51,7 +51,7 @@
                                                 <td>{{ $vehiculo->marca }} ({{ $vehiculo->modelo }})</td>
                                                 <td class="text-center">
                                                   {{ $vehiculo->no_operadores }} &nbsp;&nbsp;
-                                                  <button class="btn btn-sm btn-success text-white" style="padding-bottom: 0px;" id="btnOperador">
+                                                  <button class="btn btn-sm btn-success text-white" style="padding-bottom: 0px;" id="btnOperador" data-attr="{{ $vehiculo->id_vehiculo }}">
                                                     <span class="ic--baseline-group-add"></span>
                                                   </button>
                                                 </td>
@@ -79,13 +79,16 @@
     @include('components.modales.modal_vehiculo')
 
     <!-- Modal Operador -->
-     @include('components.modales.modal_operador',$operadores);
+     @include('components.modales.modal_operador');
 
     <x-slot name="scripts">
         <script>
             window.routes = {
                 'guardarVehiculo' : '{{ route('admin.api.guardarVehiculo') }}',
-                'getVehiculoId' : '{{ route('admin.api.getVehiculoId') }}'
+                'getVehiculoId' : '{{ route('admin.api.getVehiculoId') }}',
+                'guardarOperador' : '{{ route('admin.api.guardarOperador') }}',
+                'getVehiculoOperadores' : '{{ route('admin.api.getVehiculoOperadores') }}',
+                'asignarOperadorVehiculo' : '{{ route('admin.api.asignarOperadorVehiculo') }}'
             }
         </script>
     </x-slot> 

@@ -9,6 +9,7 @@ export default defineConfig({
                 'public/sass/viaje.scss', 
                 'public/sass/login.scss',
                 'public/sass/admin.scss', 
+                'public/sass/vehiculo.scss', 
                 'public/js/app.js', 
                 'public/js/viaje.js', 
                 'public/js/login.js',              

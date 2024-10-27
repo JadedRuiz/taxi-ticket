@@ -5,6 +5,7 @@ use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\VehiculosController;
+use App\Http\Controllers\OperadorController;
 
 #region [Vistas]
     //Página Principal
@@ -36,12 +37,18 @@ use App\Http\Controllers\VehiculosController;
             Route::group(['as' => 'api.','prefix' => 'api'], function () {
                 //CRUD Home
                 Route::post('generarTicket', [AdminController::class, 'generarTicket'])->name("generar");
+                Route::post('asignarVehiculoOperador', [AdminController::class, 'asignarVehiculoOperador'])->name("asignarVehiculoOperador");                
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');
                 //CRUD Vehiculo
                 Route::post("guardarVehiculo",[VehiculosController::class, 'guardarVehiculo'])->name("guardarVehiculo");
                 Route::post('obtenerVehiculosPorId', [VehiculosController::class, 'obtenerVehiculosPorId'])->name('getVehiculoId');
+                //CRUD Operador
+                Route::post("guardarOperador",[OperadorController::class, 'guardarOperador'])->name("guardarOperador");
+                Route::post('obtenerVehiculoOperadores', [OperadorController::class, 'obtenerVehiculoOperadores'])->name('getVehiculoOperadores');
+                Route::post('asignarOperadorVehiculo', [OperadorController::class, 'asignarOperadorVehiculo'])->name('asignarOperadorVehiculo');
+
             });
         #endregion 
     });      

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\DireccionesWebHookModel as Direcciones;
 use App\Models\ViajeModel as Viaje;
 use App\Models\DetViajeModel as DetViaje;
+use App\Http\Controllers\VehiculosController as Vehiculos;
+use App\Models\OperadorModel as Operador;
 
 class AdminController extends Controller
 {
@@ -19,13 +21,14 @@ class AdminController extends Controller
             $user = json_decode($this->decode_json(session('data-user')));
             if($user->webhook){
                 $reservaciones = DB::table("tbl_viajes as tblV")
-                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio")
+                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","status")
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
                 ->where("tblV.empresa_id",$user->id_empresa)
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
+                $vehiculos = $this->obtenerVehiculosOperadores();
             }else{
                 $reservaciones = DB::table("tbl_viajes as tblV")
                 ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblD.destino","tblD.precio","tblO.origen","tblV.date_creacion",)
@@ -35,9 +38,10 @@ class AdminController extends Controller
                 ->where("tblV.empresa_id",$user->id_empresa)
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
-            }
+                $vehiculos=[];
+            }            
             $entries = ['public/js/admin.js','public/sass/admin.scss'];
-            return view('admin/Home', compact('user','reservaciones','entries'));
+            return view('admin/Home', compact('user','reservaciones','entries','vehiculos'));
         }
         return view('admin/template/Login');
     }
@@ -192,6 +196,58 @@ class AdminController extends Controller
             Log::error("Error WebHookMyRide: ".$e->getMessage());
             DB::rollBack();
             return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
+        }
+    }
+
+    public function obtenerVehiculosOperadores() {
+        try {
+            $cls_vehiculos = new Vehiculos();
+            $vehiculos = $cls_vehiculos->obtenerVehiculos();
+            if($vehiculos["ok"] && count($vehiculos["data"]) > 0) {
+                foreach($vehiculos["data"] as $vehiculo) {
+                    $operadores = Operador::select("nombres","apellidos","id_vehiculo_operador")
+                    ->join("rel_vehiculo_operador as tblVO","tblVO.operador_id","=","id_operador")
+                    ->where("tblVO.vehiculo_id",$vehiculo->id_vehiculo)
+                    ->get();
+
+                    $vehiculo->operadores = $operadores;
+                }
+                return [ "ok" => true, "data" => $vehiculos["data"]];
+            } 
+            return ["ok" => true, "data" => []];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [obtenerVehiculosOperadores]: ".$e->getMessage());
+            return ["ok" => false, "message" => "No se han encontrado operadores"];
+        }
+    }
+    public function asignarVehiculoOperador(Request $request) {
+        try {
+            $validar = DB::table("rel_viaje_vehiculo_operador")
+            ->where("viaje_id",$request->id_viaje)
+            ->where("vehiculo_operador_id",$request->id_vehiculo_operador)
+            ->first();
+            if($validar) {
+                DB::table("rel_viaje_vehiculo_operador")
+                ->where("id_viaje_vehiculo_operador",$validar->id_viaje_vehiculo_operador)
+                ->update([
+                    "vehiculo_operador_id" => $request->id_vehiculo_operador
+                ]);
+
+                return [ "ok" => true, "data" => "Datos almacenodos exitosamente"];
+            }   
+            DB::table("rel_viaje_vehiculo_operador")->insert([
+                "viaje_id" => $request->id_viaje,
+                "vehiculo_operador_id" => $request->id_vehiculo_operador,
+                "dtCreacion" => date("Y-m-d h:i:s"),
+                "activo" => 1
+            ]);
+            Viaje::where("id_viaje",$request->id_viaje)->update([
+                "status" => 2
+            ]);
+            return [ "ok" => true, "data" => "Datos almacenodos exitosamente"];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [asignarVehiculoOperador]: ".$e->getMessage());
+            return ["ok" => false, "message" => "No se han encontrado operadores"];
         }
     }
 }

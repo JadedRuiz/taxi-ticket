@@ -13,12 +13,10 @@ class VehiculosController extends Controller
     public function index() {
         if(session()->has('data-user')) {
             $user = json_decode($this->decode_json(session('data-user')));
-            $entries = ["public/js/vehiculo.js", "public/js/operador.js", "public/sass/vehiculo.scss"];
+            $entries = ["public/js/vehiculo.js", "public/js/operador.js", "public/sass/vehiculo.scss","public/sass/operador.scss"];
             $vehiculos = $this->obtenerVehiculos();
-            $operadores = new Operador();
-            $operadores = $operadores->obtenerOperadores();
 
-            return view('admin/Vehiculos', compact('user','entries','vehiculos','operadores'));
+            return view('admin/Vehiculos', compact('user','entries','vehiculos'));
         }
         return view('admin/template/Login');
     }
@@ -31,7 +29,10 @@ class VehiculosController extends Controller
             ->leftJoin("tbl_fotografias as tblF","tblF.id_fotografia","=","tbl_vehiculos.fotografia_id")
             ->get();
             foreach($vehiculos as $vehiculo) {
-                $vehiculo->no_operadores = DB::table("rel_vehiculo_operador")->where("vehiculo_id",$vehiculo->id_vehiculo)->count();
+                $vehiculo->no_operadores = DB::table("rel_vehiculo_operador")
+                ->where("vehiculo_id",$vehiculo->id_vehiculo)
+                ->where("activo",1)
+                ->count();
             }
             return ["ok" => true,"data" => $vehiculos];
         }catch(\PdoException | \Error | \Exception $e){

@@ -1,0 +1,65 @@
+.modal-header {
+    align-items: start !important;
+}
+.txtTitle {
+    font-size: 14.4px !important;
+    font-weight: bold !important;
+}
+.just .card-body {
+    margin-bottom: 0px !important;
+    padding-bottom: 0px !important;
+}
+.just {
+    height: 115px !important;
+    padding: 0px;
+}
+.just .card-title {
+    font-size: 14px;
+}
+.just .card-text {
+    font-size: 14px;
+}
+.lstVehiculos {
+    height: auto;
+    max-height: 560px;
+    overflow-y: auto;
+    padding: 5px 2px;
+}
+.slcOperadores {
+    width: 250px;
+}
+.card {
+    box-shadow: 0 2px 4px rgb(15 34 58 / 49%) !important;
+    margin-bottom: 0px !important;
+}
+.modal-body {
+    max-height: 560px !important;
+    overflow: hidden !important;
+}
+// Scroll-bar
+.lstVehiculos {
+    --sb-track-color: #ffffff;
+    --sb-thumb-color: #5b73e8;
+    --sb-size: 9px;
+}
+
+.lstVehiculos::-webkit-scrollbar {
+    width: var(--sb-size);
+}
+
+.lstVehiculos::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: 3px;
+}
+
+.lstVehiculos::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: 3px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+    .lstVehiculos {
+        scrollbar-color: var(--sb-thumb-color)
+        var(--sb-track-color);
+    }
+}

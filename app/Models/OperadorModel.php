@@ -14,12 +14,20 @@ class OperadorModel extends Model
     public $incrementing = false;
 
     protected $fillable= [
-        'id_direccion', 
-        'nombres', 
+        'fotografia_id',
+        'nombres',
         'apellidos', 
         'correo', 
         'telefono', 
-        'status', 
+        'no_licencia', 
+        'dtVigencia', 
+        'curp', 
+        'edad', 
+        'dtNacimiento', 
+        'dtIngreso', 
+        'dtBaja', 
+        'status',
+        'direccion',
         'dtCreacion', 
         'activo'
     ];
