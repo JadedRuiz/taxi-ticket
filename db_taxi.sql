@@ -18,7 +18,7 @@
 --
 -- Table structure for table `det_viaje`
 --
-
+USE jadeandr_db_taxi;
 DROP TABLE IF EXISTS `det_viaje`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;

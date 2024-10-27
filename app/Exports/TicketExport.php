@@ -6,8 +6,12 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 
 class TicketExport {
 
-    public static function generarTicket($viaje, $det_viaje, $destino, $origen, $empresa) {
-        $pdf = new Fpdf('P','mm', array(80,140));
+    public static function generarTicket($viaje, $det_viaje, $destino, $origen, $empresa, $data_vehiculo_operador = null) {
+        if($data_vehiculo_operador != null) {
+            $pdf = new Fpdf('P','mm', array(80,150));
+        }else {
+            $pdf = new Fpdf('P','mm', array(80,140)); 
+        }
         $pdf->AddPage();
         //Imagen
         $img_logo = str_replace('/img','',$empresa->logo_path);
@@ -79,51 +83,73 @@ class TicketExport {
         #region [Titulo Vehiculo]
             $pdf->SetFont('Raleway-Bold', '', 8);
             $pdf->setXY(5,73);
-            $pdf->Cell(70,4,"VEHICULO",0,0,"L");   
+            if($data_vehiculo_operador != null ) {
+                $pdf->Cell(70,4,"VEHICULO & OPERADOR",0,0,"L");   
+            } else {
+                $pdf->Cell(70,4,"VEHICULO",0,0,"L");   
+            }
             $pdf->setXY(5,77);      
             $pdf->Cell(70,0.05,"",0,0,"",1);
         #endregion
         #region [Cuerpo Vehiculo]
-            $pdf->SetFont('Raleway-Regular', '', 7);
-            $pdf->setXY(5,79);
-            $pdf->Cell(30,4,"Marca y Tipo",0,0,"L");
-            $pdf->Cell(40,4,$det_viaje->vehiculo,0,0,"L");
-            $pdf->setXY(5,82);
-            $pdf->Cell(30,4,"No. max de maletas",0,0,"L");
-            $pdf->Cell(40,4,$det_viaje->no_maletas,0,0,"L");
-            $pdf->setXY(5,85);
-            $pdf->Cell(30,4,"No. max de pasajeros",0,0,"L");
-            $pdf->Cell(40,4,$det_viaje->no_pasajeros,0,0,"L");
+            if($data_vehiculo_operador != null ) {
+                $pdf->SetFont('Raleway-Regular', '', 7);
+                $pdf->setXY(5,79);
+                $pdf->Cell(30,4,"Vehiculo y Marca",0,0,"L");
+                $pdf->Cell(40,4,$data_vehiculo_operador->vehiculo.", ".$data_vehiculo_operador->marca." (".$data_vehiculo_operador->modelo.")",0,0,"L");
+                $pdf->setXY(5,82);
+                $pdf->Cell(30,4,"No. max de maletas",0,0,"L");
+                $pdf->Cell(40,4,$det_viaje->no_maletas,0,0,"L");
+                $pdf->setXY(5,85);
+                $pdf->Cell(30,4,"No. max de pasajeros",0,0,"L");
+                $pdf->Cell(40,4,$det_viaje->no_pasajeros,0,0,"L");
+                $pdf->setXY(5,88);
+                $pdf->Cell(30,4,"Nombre operador",0,0,"L");
+                $nombre = $data_vehiculo_operador->nombres." ".$data_vehiculo_operador->apellidos;
+                strlen($nombre) > 23 ? substr($nombre, 0,23) : null;
+                $pdf->Cell(40,4,$nombre,0,0,"L");
+            }else {
+                $pdf->SetFont('Raleway-Regular', '', 7);
+                $pdf->setXY(5,79);
+                $pdf->Cell(30,4,"Marca y Tipo",0,0,"L");
+                $pdf->Cell(40,4,$det_viaje->vehiculo,0,0,"L");
+                $pdf->setXY(5,82);
+                $pdf->Cell(30,4,"No. max de maletas",0,0,"L");
+                $pdf->Cell(40,4,$det_viaje->no_maletas,0,0,"L");
+                $pdf->setXY(5,85);
+                $pdf->Cell(30,4,"No. max de pasajeros",0,0,"L");
+                $pdf->Cell(40,4,$det_viaje->no_pasajeros,0,0,"L");
+            }            
         #endregion
         #region [Titulo Det Cliente]
             $pdf->SetFont('Raleway-Bold', '', 8);
-            $pdf->setXY(5,91);
+            $pdf->setXY(5,94);
             $pdf->Cell(70,4,"DETALLES DEL CLIENTE",0,0,"L");   
-            $pdf->setXY(5,95);      
+            $pdf->setXY(5,98);      
             $pdf->Cell(70,0.05,"",0,0,"",1);
         #endregion
         #region [Cuerpo Det Cliente]
             $pdf->SetFont('Raleway-Regular', '', 7);
-            $pdf->setXY(5,97);
+            $pdf->setXY(5,100);
             $pdf->Cell(30,4,"Nombre completo",0,0,"L");
             $pdf->Cell(40,4,utf8_decode($det_viaje->nombre),0,0,"L");
-            $pdf->setXY(5,100);
+            $pdf->setXY(5,103);
             $pdf->Cell(30,4,utf8_decode("Correo electrónico"),0,0,"L");
             $pdf->Cell(40,4,$det_viaje->correo,0,0,"L");
-            $pdf->setXY(5,103);
+            $pdf->setXY(5,106);
             $pdf->Cell(30,4,utf8_decode("Teléfono"),0,0,"L");
             $pdf->Cell(40,4,$det_viaje->telefono,0,0,"L");
         #endregion
         #region [Titulo Det Pago]
             $pdf->SetFont('Raleway-Bold', '', 8);
-            $pdf->setXY(5,109);
+            $pdf->setXY(5,111);
             $pdf->Cell(70,4,"TIPO DE PAGO",0,0,"L");   
-            $pdf->setXY(5,113);      
+            $pdf->setXY(5,115);      
             $pdf->Cell(70,0.05,"",0,0,"",1);
         #endregion
         #region [Cuerpo Pago]
             $pdf->SetFont('Raleway-Regular', '', 7);
-            $pdf->setXY(5,115);
+            $pdf->setXY(5,117);
             $pdf->Cell(30,4,"Pago",0,0,"L");
             $pdf->Cell(40,4,$det_viaje->tipo_pago,0,0,"L");
         #endregion

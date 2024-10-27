@@ -26,7 +26,7 @@
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 300px;">Contacto</th>
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 320px;" >Itinerario</th>
                                             @if(count($reservaciones) > 0 && isset($reservaciones[0]->status))
-                                                <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Status</th>
+                                                <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Status/Operador</th>
                                             @endif
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Precio</th>
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 183px;">Fecha Reserva</th>
@@ -51,8 +51,12 @@
                                                     @if($reservacion->status == "Pending")
                                                         <td class="text-center"><span class="badge rounded-pill bg-primary">Sin asginación</span></td>
                                                     @endif
-                                                    @if($reservacion->status == "2")
-                                                        <td class="text-center"><span class="badge rounded-pill bg-success">Asignado</span></td>
+                                                    @if($reservacion->status == "En servicio")
+                                                        <td class="text-center">
+                                                            <span class="badge rounded-pill bg-success">Asignado</span>
+                                                            <br>
+                                                            {{ $reservacion->nombres }} {{ $reservacion->apellidos }}
+                                                        </td>
                                                     @endif
                                                 @endif
                                                 <td>{{ "$". number_format($reservacion->precio,2) }}</td>

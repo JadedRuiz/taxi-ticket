@@ -21,10 +21,14 @@ class AdminController extends Controller
             $user = json_decode($this->decode_json(session('data-user')));
             if($user->webhook){
                 $reservaciones = DB::table("tbl_viajes as tblV")
-                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","status")
+                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status",
+                "tblO.nombres","tblO.apellidos")
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+                ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
                 ->where("tblV.empresa_id",$user->id_empresa)
                 ->orderBy("tblV.date_creacion",'DESC')
                 ->get();
@@ -99,6 +103,20 @@ class AdminController extends Controller
             $destino= Direcciones::select("nombre as destino","precio","duracion","distancia")
             ->where("id_direccion",$det_viaje->destino_id)
             ->first();
+            $datos_vehiculo_operador = DB::table("rel_viaje_vehiculo_operador as rlVVO")
+            ->select("vehiculo","nombres","apellidos","marca","modelo")
+            ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","vehiculo_operador_id")
+            ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+            ->leftJoin("tbl_vehiculos as tblV","tblV.id_vehiculo","=","rlVO.vehiculo_id")
+            ->where("viaje_id",$viaje->id_viaje)
+            ->first();
+            //Generamos el PDF en B64
+            try {
+                $pdf_b64= Ticket::generarTicket($viaje, $det_viaje, $destino, $origen, $validar_empresa, $datos_vehiculo_operador);
+                return ["ok"=> true, "data" => $pdf_b64];
+            }catch(\Exception $e) {
+                return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
+            }
         }else{
             $origen = DB::table("tbl_origenes")
             ->where("id_origen",$det_viaje->origen_id)
@@ -106,14 +124,14 @@ class AdminController extends Controller
             $destino = DB::table("tbl_destinos")
             ->where("id_destino",$det_viaje->destino_id)
             ->first();
-        }
-        //Generamos el PDF en B64
-        try {
-            $pdf_b64= Ticket::generarTicket($viaje, $det_viaje, $destino, $origen, $validar_empresa);
-            return ["ok"=> true, "data" => $pdf_b64];
-        }catch(\Exception $e) {
-            return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
-        }
+            //Generamos el PDF en B64
+            try {
+                $pdf_b64= Ticket::generarTicket($viaje, $det_viaje, $destino, $origen, $validar_empresa);
+                return ["ok"=> true, "data" => $pdf_b64];
+            }catch(\Exception $e) {
+                return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
+            }
+        }        
     }
 
     public function logout() {
@@ -242,7 +260,7 @@ class AdminController extends Controller
                 "activo" => 1
             ]);
             Viaje::where("id_viaje",$request->id_viaje)->update([
-                "status" => 2
+                "status" => "En servicio"
             ]);
             return [ "ok" => true, "data" => "Datos almacenodos exitosamente"];
         } catch(\PdoException | \Error | \Exception $e) {
