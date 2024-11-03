@@ -28,12 +28,10 @@
                     <form id="form-operador" enctype="multipart/form-data" class="row needs-validation" novalidate>
                         <p class="col-12 mb-1 txtTitle">Nuevo operador</p>
                         <input type="hidden" id="id_operador" value="0">
-                        <input type="hidden" id="id_direccion" value="0">
                         <div class="form-group col-12">
                         <label for="fotografia">Fotografia</label>
                         <div class="input-group">
-                            <input type="hidden" id="fotografia_id" value="0">
-                            <input type="text" class="form-control" placeholder="Adjunte la imagen del operador" id="fotografia_operador" disabled>
+                            <input type="text" class="form-control" placeholder="Adjunte la imagen del operador" id="path" disabled>
                             <input type="file" class="d-none" id="inpAdjOperador" accept="image/png, image/jpeg, image/jpg">
                             <button class="btn btn-outline-secondary" type="button" id="btnAdjOperador">Adjuntar</button>
                             </div>

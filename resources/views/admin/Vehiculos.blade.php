@@ -88,7 +88,8 @@
                 'getVehiculoId' : '{{ route('admin.api.getVehiculoId') }}',
                 'guardarOperador' : '{{ route('admin.api.guardarOperador') }}',
                 'getVehiculoOperadores' : '{{ route('admin.api.getVehiculoOperadores') }}',
-                'asignarOperadorVehiculo' : '{{ route('admin.api.asignarOperadorVehiculo') }}'
+                'asignarOperadorVehiculo' : '{{ route('admin.api.asignarOperadorVehiculo') }}',
+                'getOperadorId' : '{{ route('admin.api.getOperadorId') }}'
             }
         </script>
     </x-slot> 

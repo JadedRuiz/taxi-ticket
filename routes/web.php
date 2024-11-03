@@ -37,7 +37,9 @@ use App\Http\Controllers\OperadorController;
             Route::group(['as' => 'api.','prefix' => 'api'], function () {
                 //CRUD Home
                 Route::post('generarTicket', [AdminController::class, 'generarTicket'])->name("generar");
-                Route::post('asignarVehiculoOperador', [AdminController::class, 'asignarVehiculoOperador'])->name("asignarVehiculoOperador");                
+                Route::post('asignarOperadorAViaje', [AdminController::class, 'asignarOperadorAViaje'])->name("asignarOperadorAViaje");  
+                Route::post('agregarNuevoTurno', [AdminController::class, 'agregarNuevoTurno'])->name('agregarNuevoTurno');   
+                Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync');           
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');
@@ -48,6 +50,7 @@ use App\Http\Controllers\OperadorController;
                 Route::post("guardarOperador",[OperadorController::class, 'guardarOperador'])->name("guardarOperador");
                 Route::post('obtenerVehiculoOperadores', [OperadorController::class, 'obtenerVehiculoOperadores'])->name('getVehiculoOperadores');
                 Route::post('asignarOperadorVehiculo', [OperadorController::class, 'asignarOperadorVehiculo'])->name('asignarOperadorVehiculo');
+                Route::post('obtenerOperadorPorId', [OperadorController::class, 'obtenerOperadorPorId'])->name('getOperadorId');
 
             });
         #endregion 

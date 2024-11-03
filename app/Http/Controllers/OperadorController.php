@@ -23,6 +23,25 @@ class OperadorController extends Controller
         }
     }
 
+    public function obtenerOperadorPorId(Request $request) {
+        try {
+            //Bucamos el operador
+           $operador = Operador::select("id_operador","nombres","apellidos","correo","telefono","no_licencia","dtVigencia","path","status","curp","edad","dtNacimiento",
+           "dtIngreso","dtBaja","direccion")
+           ->leftJoin("tbl_fotografias as tblF","tblF.id_fotografia","=","fotografia_id")
+           ->where("id_operador", $request->id_operador)
+           ->firstOrFail();
+           $operador->dtVigencia = date('Y-m-d',strtotime($operador->dtVigencia));
+           $operador->dtNacimiento = date('Y-m-d',strtotime($operador->dtNacimiento));
+           $operador->dtIngreso = date('Y-m-d',strtotime($operador->dtIngreso));
+           $operador->dtBaja = date('Y-m-d',strtotime($operador->dtBaja));
+           return ["ok" => true, "data" => $operador];
+
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [obtenerOperadorPorId]: ".$e->getMessage());
+            return ["ok" => false, "message" => "Ha ocurrido un problema al recuperar la información del operador."];
+        }
+    }
     // Método [obtenerVehiculoOperadores]
     // Desc: Método para obtener los operadores
     public function obtenerVehiculoOperadores(Request $request) {
@@ -66,6 +85,7 @@ class OperadorController extends Controller
             "dtCreacion" => date('Y-m-d h:i:s'),
             "activo" => 1
         ];
+        $curp_validate = $request->id_operador != null ? '' : 'unique:tbl_operadores|';
         $user = json_decode($this->decode_json(session('data-user')));
         #region [Validaciones]
             $request->validate([
@@ -75,7 +95,7 @@ class OperadorController extends Controller
                 'telefono' => 'nullable|numeric|min:10',
                 'no_licencia' => 'required|max:50',
                 'dtVigencia' => 'required|date',
-                'curp' => 'unique:tbl_operadores|max:18',
+                'curp' => $curp_validate.'max:18',
                 'edad' => 'nullable|numeric',
                 'dtNacimiento' => 'nullable|date',
                 'dtIngreso' => 'nullable|date',
@@ -106,8 +126,8 @@ class OperadorController extends Controller
                 'image.max' => 'Tamaño de imagen no valido (Menor a 5Mb)'
             ]);
             //Validamos si es un update
-            if($request->id_operador != 0) {
-                // return $this->actualizarVehiculo($request, $user);
+            if($request->id_operador != null) {
+                return $this->actualizarOperador($request, $user);
             }
             //Validamos si existe una imagen
             if($request->image != null && $request->hasFile("image")){
@@ -158,6 +178,78 @@ class OperadorController extends Controller
         #endregion
     }
 
+    // Método [actualizarOperador]
+    // Desc: Método que actualiza un operador
+    public function actualizarOperador($request, $user) {
+        //Variables
+        $foto_ant = DB::table("tbl_operadores")->select("path","fotografia_id")
+        ->leftJoin("tbl_fotografias as tblF","tblF.id_fotografia","=","fotografia_id")
+        ->where("id_operador",$request->id_operador)
+        ->first();
+        $data_foto = [
+            "path" => null,
+            "namespace" => "image",
+            "extension" => "",
+            "dtCreacion" => date('Y-m-d h:i:s'),
+            "activo" => 1
+        ];
+        #region [Validaciones]
+            //Validamos si existe una imagen
+            if($request->image != null && $request->hasFile("image")){
+                //Validamos si el path anterior era una imagen
+                if($foto_ant->path != null && file_exists(public_path($foto_ant->path))) {
+                    //Eliminamos la imagen ant
+                    unlink(public_path($foto_ant->path));
+                }
+                $data_foto["extension"] = $request->image->extension();
+                $image= time().'.'.$data_foto["extension"];
+                $data_foto["path"] = '/img/Empresas/'.$user->empresa.'/operadores/'.$image;
+                $request->image->move(public_path('img/Empresas/'.$user->empresa."/operadores"), $image);
+            }
+        #endregion
+        #region [Inserciones a BD]
+            try{
+                $id_foto=$foto_ant->fotografia_id;
+                DB::beginTransaction();
+                if($foto_ant->fotografia_id == 0 && $request->hasFile("image")) {
+                    $id_foto = DB::table("tbl_fotografias")->insertGetId($data_foto);
+                }
+                if($foto_ant->fotografia_id != 0 && $request->hasFile("image")) {
+                    DB::table("tbl_fotografias")
+                    ->where("id_fotografia",$foto_ant->fotografia_id)
+                    ->update($data_foto);
+                }
+                $operador = Operador::find($request->id_operador);
+                $operador->fotografia_id = $id_foto;
+                $operador->nombres = strtoupper($request->nombres);
+                $operador->apellidos = strtoupper($request->apellidos);
+                $operador->correo = $request->correo;
+                $operador->telefono = $request->telefono;
+                $operador->no_licencia = strtoupper($request->no_licencia);
+                $operador->dtVigencia = $request->dtVigencia;
+                $operador->curp = strtoupper($request->curp);
+                $operador->edad = $request->edad;
+                $operador->dtNacimiento = $request->dtNacimiento != "" ? $request->dtNacimiento : null;
+                $operador->dtIngreso = $request->dtIngreso != "" ? $request->dtIngreso : null;
+                $operador->dtBaja = $request->dtBaja != "" ? $request->dtBaja : null;
+                $operador->status = $request->status;
+                $operador->direccion = strtoupper($request->direccion);
+                $operador->dtCreacion = date("Y-m-d h:i:s");
+                $operador->activo = 1;
+                $operador->save();
+                DB::commit();
+                return [ 'ok' => true, "message" => "Operador Actualizado" ];
+                
+            } catch(\PdoException | \Error | \Exception $e) {
+                DB::rollBack();
+                Log::error("ERROR En método [actualizarOperador]: ".$e->getMessage());
+                return [ 'ok' => false, "message" => "Ha ocurrido un error: ". $e->getMessage() ];
+            }
+        #endregion
+    }
+
+    // Método [asignarOperadorVehiculo]
+    // Desc: Método para asignar operador a vehiculo
     public function asignarOperadorVehiculo(Request $request) {
         try {
             $validar = DB::table("rel_vehiculo_operador")

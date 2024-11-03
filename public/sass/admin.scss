@@ -56,7 +56,32 @@
     background: var(--sb-thumb-color);
     border-radius: 3px;
 }
-
+.list-turnos {
+    max-height: 500px;
+    overflow: hidden;
+}
+.list-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #495057 !important;
+}
+.list-item-header {
+    border: 2px #495057 solid;
+}
+.border-orden {
+    border-right: 2px #495057 solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.lstTurnoSmall {
+    font-size: 12px !important;
+}
+.lstTitulo {
+    font-size: 13px;
+    font-weight: bold;
+    color: #495057;
+}
 @supports not selector(::-webkit-scrollbar) {
     .lstVehiculos {
         scrollbar-color: var(--sb-thumb-color)

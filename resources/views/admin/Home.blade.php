@@ -17,12 +17,44 @@
                         <h4 class="card-title">Reservaciones</h4>
                         <p class="card-title-desc my-0">Esta tabla muestra la información de ultimas 100 reservaciones realizadas.</p>
                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                        <div class="row">
-                            <div class="col-sm-12">
+                        <div class="row mt-3">
+                            @if(isset($turnos)) 
+                                <div class="col-3">
+                                    <p class="py-1 my-1 list-title">Vehiculos en turno</p>
+                                    <ul class="list-group list-turnos">
+                                        <li class="list-group-item row px-0 mx-0 d-flex list-item-header">
+                                            <div class="col-3 px-0 border-orden">Orden</div>
+                                            <div class="col-9 d-flex justify-content-between">
+                                                Vehiculo & Operador 
+                                                <button class="btn btn-sm btn-success btnAgregarTurno" style="padding-bottom: 0px;">
+                                                    <span class="mdi--truck-plus"></span>
+                                                </button>
+                                            </div>
+                                        </li>
+                                        @if($turnos["ok"] && count($turnos["data"]) > 0)
+                                            <div class="lstTurnos">
+                                                @foreach($turnos["data"] as $index => $turno)
+                                                    <li class="list-group-item row px-0 mx-0 d-flex">
+                                                        <div class="col-3 px-0 border-orden">{{ $index+1 }}</div>
+                                                        <div class="col-9 d-flex flex-column">
+                                                            <p class="py-0 my-0 lstTitulo">{{ substr($turno->nombres." ".$turno->apellidos,0,25)."..."  }}</p>
+                                                            <small class="lstTurnoSmall text-danger">{{ $turno->vehiculo."- $turno->marca ($turno->modelo)" }}</small>
+                                                        </div>
+                                                    </li>
+                                                @endforeach
+                                            </div>                                      
+                                        @else
+                                            <li class="list-group-item text-center">Aún no hay vehiculos en turno</li>
+                                        @endif
+                                        
+                                    </ul>
+                                </div>
+                            @endif
+                            <div class="{{ isset($turnos) ? 'col-9' : 'col-12' }}">
                                 <table id="datatable" class="table table-striped dataTable display" style="width: 100%;">
                                     <thead>
                                         <tr role="row">
-                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 100px;">Folio</th>
+                                            {{-- <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 100px;">Folio</th> --}}
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 300px;">Contacto</th>
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 320px;" >Itinerario</th>
                                             @if(count($reservaciones) > 0 && isset($reservaciones[0]->status))
@@ -36,7 +68,7 @@
                                     <tbody>
                                         @foreach($reservaciones as $reservacion)
                                             <tr>
-                                                <td>{{ $reservacion->folio }}</td>
+                                                {{-- <td>{{ $reservacion->folio }}</td> --}}
                                                 <td>
                                                     {{ strtoupper($reservacion->nombre) }}
                                                     <br>
@@ -73,7 +105,7 @@
                                                             </button>
                                                         @endif
                                                         
-                                                        <button class="btn btn-sm btn-secondary text-white btnAsignar" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
+                                                        <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
                                                             <i class="fa fa-check-square" aria-hidden="true"></i>
                                                         </button>
                                                     @else
@@ -109,13 +141,18 @@
     </div>
 
     <!-- Modal Operadores -->
-    @include('components.modales.modal_asignar_vehiculo', $vehiculos)
+    @if(isset($vehiculos)) 
+        @include('components.modales.modal_asignar_vehiculo', $vehiculos)
+    @endif
+    
 
     <x-slot name="scripts">
         <script>
             window.routes = {
                 'generarTicket' : '{{ route('admin.api.generar') }}',
-                'asignarVehiculoOperador' : '{{ route('admin.api.asignarVehiculoOperador') }}'
+                'agregarNuevoTurno' : '{{ route('admin.api.agregarNuevoTurno') }}',
+                'obtenerTurnosAsync' : '{{ route('admin.api.obtenerTurnosAsync') }}',
+                'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}'
             }
         </script>
     </x-slot> 

@@ -4,9 +4,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">
-                    Asignación de Vehiculo
+                    Nuevo turno
                     <br>
-                    <p class="card-title-desc">Aquí podrás asignar el vehiculo & operador que realizaran el viaje</p>
+                    <p class="card-title-desc">Aquí podrás agregar un vehiculo con su operador a la lista de turnos</p>
                 </h1>
                 <button type="button" class="btn-close btnModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -38,7 +38,7 @@
                                                                     </option>
                                                                 @endforeach
                                                             </select>
-                                                            <button class="btn btn-sm btn-success btnAsignarVehiculo">
+                                                            <button class="btn btn-sm btn-success btnNuevoTurno">
                                                                 <i class="fa fa-floppy-o mx-2" aria-hidden="true"></i>
                                                             </button>
                                                         </div>                                                        

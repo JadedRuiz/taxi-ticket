@@ -13,6 +13,10 @@ $(document).on("click","#btnOperador",function() {
             </div>
         </div>
     `;
+    limpiarFormulario();
+    if($("#formOperador").attr("data-show") != "false") { 
+        toggleFormOperador();
+    }
     $.post(window.routes.getVehiculoOperadores, { id: id_vehiculo}, (res) => {
         if(res.ok) {
             if(res.data.length > 0) {
@@ -39,21 +43,8 @@ $(document).on("click","#btnOperador",function() {
 
 //Nuevo operador
 $(document).on("click","#btnNewOperador",function() {
-    if($("#formOperador").attr("data-show") == "false") {
-        $("#formOperador").show();
-        $(this).removeClass("btn-success");
-        $(this).addClass("btn-danger");
-        $(this).find("span").removeClass("flowbite--user-add-solid");
-        $(this).find("span").addClass("mdi--close-box");
-        $("#formOperador").attr("data-show","true");
-        return;
-    }
-    $("#formOperador").hide();
-    $(this).removeClass("btn-danger");
-    $(this).addClass("btn-success");
-    $(this).find("span").removeClass("mdi--close-box");
-    $(this).find("span").addClass("flowbite--user-add-solid");
-    $("#formOperador").attr("data-show","false");
+    limpiarFormulario();
+    toggleFormOperador();
 });
 
 //Guardar Vehiculo
@@ -73,19 +64,38 @@ $(document).on("click", "#btnSaveOpe", function() {
             contentType: false,
             processData: false,
             success: (res) => {
-                Swal.fire({
-                    title: "Buen trabajo!",
-                    text: 'Datos guardados existosamente',
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then((result) => {
-                    /* Read more about handling dismissals below */
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        $(".lstOperadores").prepend(agregarCardOperador(res.data));
-                        $("#btnNewOperador").click();
-                    }
-                });
+                if(res.ok) {
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: 'Datos guardados existosamente',
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then((result) => {
+                        /* Read more about handling dismissals below */
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            if($("#id_operador").val() == 0) {
+                                $(".lstOperadores").prepend(agregarCardOperador(res.data));
+                            }else {
+                                $.post(window.routes.getVehiculoOperadores, { id: id_vehiculo}, (res) => {
+                                    if(res.ok) {
+                                        if(res.data.length > 0) {
+                                            let html = "";
+                                            res.data.forEach(element => {
+                                                html += agregarCardOperador(element);
+                                            });
+                                            $(".lstOperadores").html(html);
+                                        } else {
+                                            $(".lstOperadores").html(no_operadores);
+                                        }
+                                        toggleFormOperador();
+                                        return;
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
             },
             error: (xhr) => {
                 alerta(xhr.responseJSON.message,'alert-danger');
@@ -106,10 +116,10 @@ $(document).on("change","#inpAdjOperador", function(e) {
     if(image_size > 5000) {
         alerta("La imagen no cumple con el tamaño",'alert-danger');
         $('#inpAdjOperador').val("");
-        $("#fotografia_operador").val("");
+        $("#path").val("");
         return;
     }
-    $("#fotografia_operador").val(e.target.files[0].name);
+    $("#path").val(e.target.files[0].name);
 });
 
 //Seleccionar status
@@ -151,6 +161,35 @@ $(document).on("click",".checkSelectOpe",function() {
         });
     });
 });
+
+//Habilitar la edicion del operador
+$(document).on("click",".btnEditOperador", function() {
+    let id_operador = $(this).attr("data-attr");
+    limpiarFormulario();
+    $.post(window.routes.getOperadorId,{'id_operador':id_operador}, (res) => {
+        if(res.ok) {
+            for(var key in res.data) {
+                $("#"+key).val(res.data[key]);
+                if(key == "status") {
+                    $(".status").each((index,element) => {
+                        $(element).css({
+                            border: 'none'
+                        });
+                        if($(element).attr("data-status") == res.data[key]) {
+                            $(element).css({
+                                border: '2px black solid'
+                            });
+                        }
+                    })
+                }
+            }
+            toggleFormOperador();
+            return;
+        }
+        alerta(res.message,'alert-danger');
+    });
+});
+
 //Template Card Operador
 function agregarCardOperador(data) {
     let status = "";
@@ -182,7 +221,7 @@ function agregarCardOperador(data) {
                         <div class="footer-card col-12">
                             <small class="text-muted d-flex align-items-center">${ status }</small>
                             <div class="buttons">
-                                <button class="btn btn-sm btn-warning text-white" style="padding-bottom: 0px;" data-attr="${ data.id_operador }" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Operador">
+                                <button class="btn btn-sm btn-warning text-white btnEditOperador" style="padding-bottom: 0px;" data-attr="${ data.id_operador }" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Operador">
                                     <span class="ic--baseline-edit"></span>
                                 </button>
                                 <div class="form-check form-switch my-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Selcciona/Deselecciona">
@@ -210,4 +249,41 @@ function alerta(message, classname) {
         $(".btnGuardar").removeClass('d-none');
         $("#alert-form-ope").hide();
     },5000);
+}
+
+//Mostrar FormOperador
+function toggleFormOperador() {
+    if($("#formOperador").attr("data-show") == "false") {
+        $("#formOperador").show();
+        $("#btnNewOperador").removeClass("btn-success");
+        $("#btnNewOperador").addClass("btn-danger");
+        $("#btnNewOperador").find("span").removeClass("flowbite--user-add-solid");
+        $("#btnNewOperador").find("span").addClass("mdi--close-box");
+        $("#formOperador").attr("data-show","true");
+        return;
+    }
+    $("#formOperador").hide();
+    $("#btnNewOperador").removeClass("btn-danger");
+    $("#btnNewOperador").addClass("btn-success");
+    $("#btnNewOperador").find("span").removeClass("mdi--close-box");
+    $("#btnNewOperador").find("span").addClass("flowbite--user-add-solid");
+    $("#formOperador").attr("data-show","false");
+}
+
+//Limpiar Form Operador
+function limpiarFormulario() {
+    $("#form-operador input").each(function() {
+        $(this).val("");
+    });
+    $("#form-operador").removeClass('was-validated');
+    $(".status").each((index,element) => {
+        $(element).css({
+            border: 'none'
+        });
+        if($(element).attr("data-status") == 1) {
+            $(element).css({
+                border: '2px black solid'
+            });
+        }
+    })
 }
