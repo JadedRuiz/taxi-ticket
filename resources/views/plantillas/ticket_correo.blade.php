@@ -46,7 +46,7 @@
                         <tbody>
                             <tr>
                                 <td style="padding: 0px;" class="mobile">
-                                    <img class="img" src="https://futvyucatan.com/wp-content/uploads/2019/07/futv-sindicato-taxistas-yucatan-mobile.png" alt="">
+                                    <img class="img" src="https://ticket-mitaxi.jadeandru.com/img/Empresas/MyRide/logo.png" alt="">
                                     <br><br>
                                 </td>
                             </tr>
@@ -86,11 +86,11 @@
                                                 <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ "$".number_format($destino->precio,2) }}</td>
                                             </tr>
                                             <tr>
-                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Distancia</td>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Distancia (Km)</td>
                                                 <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top"> {{ $destino->distancia }}</td>
                                             </tr>
                                             <tr>
-                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Duración</td>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Duración (Min)</td>
                                                 <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top"> {{ $destino->duracion }}</td>
                                             </tr>	
                                             
@@ -102,6 +102,58 @@
                                     </table>
                                 </td>
                             </tr>
+                            @if(isset($data_facturacion))
+                            <tr>
+                                <td style="padding:0px;height:30px"></td>
+                            </tr>
+                            <tr>
+								<td style="padding:0px 0px 5px 0px;font-weight:bold;color:#444444;border-bottom:dotted 1px #aaaaaa;text-transform:uppercase">Datos Facturacion</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0px;height:15px"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0px">
+                                    <table cellspacing="0" cellpadding="0">
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Razon social</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["razon_social"] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">RFC</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["rfc"] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Calle</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["no_calle"] }}</td>
+                                            </tr>	
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">No. Calle</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["no_calle"] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Ciudad</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["ciudad"] }} </td>
+                                            </tr>	
+                                            
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Estado</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $data_facturacion["estado"] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Codigo Postal</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top"> {{ $data_facturacion["codigo_postal"] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Codigo Pais</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top"> {{ $data_facturacion["pais"] }}</td>
+                                            </tr>   
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            @endif
                             <tr>
                                 <td style="padding:0px;height:30px"></td>
                             </tr>
@@ -118,8 +170,18 @@
                                             <tr>
                                                 <td style="padding:0px">
                                                     <ol style="margin:0px;padding:0px;list-style-position:inside">
-                                                        <li style="margin:0px;padding:0px"><a href="">{{ $origen->origen }}</a></li>
-                                                        <li style="margin:0px;padding:0px"><a href="">{{ $destino->destino }}</a></li>
+                                                        @if(isset($origen->origen))
+                                                            <li style="margin:0px;padding:0px"><a href="">{{ $origen->origen }}</a></li>
+                                                        @endif
+                                                        @if(isset($origen->nombre)) 
+                                                            <li style="margin:0px;padding:0px"><a href="">{{ $origen->nombre }}</a></li>
+                                                        @endif
+                                                        @if(isset($destino->destino)) 
+                                                            <li style="margin:0px;padding:0px"><a href="">{{ $destino->destino }}</a></li>
+                                                        @endif
+                                                        @if(isset($destino->nombre)) 
+                                                            <li style="margin:0px;padding:0px"><a href="">{{ $destino->nombre }}</a></li>
+                                                        @endif
                                                     </ol>
                                                 </td>
                                             </tr>   
@@ -142,7 +204,7 @@
                                         <tbody>
                                             <tr>
                                                 <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Marca y Tipo</td>
-                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">Por asignar</td>
+                                                <td style="padding:0px 0px 0px 5px;width:300px;vertical-align:top">{{ $det_viaje->vehiculo }}</td>
                                             </tr>
                                             <tr>
                                                 <td style="padding:0px 5px 0px 0px;width:250px;vertical-align:top">Numero maximo de maletas</td>

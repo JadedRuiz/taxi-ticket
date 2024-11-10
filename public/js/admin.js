@@ -5,10 +5,7 @@ import Swal from 'sweetalert2';
 var id_viaje=0;
 $(window).on("load", function() {
     new DataTable('#datatable', {
-        order: [[0, ""]],
-        columnDefs: [
-            { targets: [0,1,2,3,4,5], orderable: false}
-        ],
+        ordering: false,
         lengthMenu: [[8,15,25,50,-1],["8","15","25","50","Todos"]],
         scrollY: '500px',
         scrollCollapse: true,
@@ -44,8 +41,21 @@ $(document).on("click",".btnTicket", function() {
         id_viaje: id_viaje
     }, (res) => {
         if(res.ok) {
-            $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
-            $(".btnModal").click();
+            Swal.fire({
+                title: "Confirmación",
+                text: "¿Se ha realizado el cobro del servicio?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, generar ticket",
+                cancelButtonText: "Cancelar"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
+                    $(".btnModal").click();
+                }
+              });            
         }
     });    
 })
@@ -57,7 +67,7 @@ $(document).on("click",'.btnAgregarTurno', function() {
 
 //Nuevo Turno
 $(document).on("click",".btnNuevoTurno", function() {
-    let id_vehiculo_operador = $(this).siblings('.slcOperadores').val();
+    let id_vehiculo_operador = $(this).attr('data-attr');
     if(id_vehiculo_operador != 0) {
         $.post(window.routes.agregarNuevoTurno, {
             id_vehiculo_operador: id_vehiculo_operador

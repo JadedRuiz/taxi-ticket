@@ -25,10 +25,12 @@
                                         <li class="list-group-item row px-0 mx-0 d-flex list-item-header">
                                             <div class="col-3 px-0 border-orden">Orden</div>
                                             <div class="col-9 d-flex justify-content-between">
-                                                Vehiculo & Operador 
-                                                <button class="btn btn-sm btn-success btnAgregarTurno" style="padding-bottom: 0px;">
-                                                    <span class="mdi--truck-plus"></span>
-                                                </button>
+                                                Vehiculo & Operador
+                                                @if(in_array($user->permisos->perfil, ["Operador","Administrador"]))
+                                                    <button class="btn btn-sm btn-success btnAgregarTurno" style="padding-bottom: 0px;">
+                                                        <span class="mdi--truck-plus"></span>
+                                                    </button>
+                                                @endif                                                
                                             </div>
                                         </li>
                                         @if($turnos["ok"] && count($turnos["data"]) > 0)
@@ -44,7 +46,9 @@
                                                 @endforeach
                                             </div>                                      
                                         @else
-                                            <li class="list-group-item text-center">Aún no hay vehiculos en turno</li>
+                                            <div class="lstTurnos">
+                                                <li class="list-group-item text-center">Aún no hay vehiculos en turno</li>
+                                            </div>
                                         @endif
                                         
                                     </ul>
@@ -54,26 +58,34 @@
                                 <table id="datatable" class="table table-striped dataTable display" style="width: 100%;">
                                     <thead>
                                         <tr role="row">
-                                            {{-- <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 100px;">Folio</th> --}}
-                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 300px;">Contacto</th>
+                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 100px;">Folio</th>
+                                            @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 300px;">Contacto</th>
+                                            @endif
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 320px;" >Itinerario</th>
                                             @if(count($reservaciones) > 0 && isset($reservaciones[0]->status))
                                                 <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Status/Operador</th>
                                             @endif
-                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Precio</th>
+                                            @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Precio</th>
+                                            @endif
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 183px;">Fecha Reserva</th>
-                                            <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 167px;">Acciones</th>
+                                            @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 167px;">Acciones</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($reservaciones as $reservacion)
                                             <tr>
-                                                {{-- <td>{{ $reservacion->folio }}</td> --}}
-                                                <td>
-                                                    {{ strtoupper($reservacion->nombre) }}
-                                                    <br>
-                                                    {{ $reservacion->telefono }}
-                                                </td>
+                                                <td>{{ $reservacion->folio }}</td>
+                                                @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                    <td>
+                                                        {{ strtoupper($reservacion->nombre) }}
+                                                        <br>
+                                                        {{ $reservacion->telefono }}
+                                                    </td>
+                                                @endif
                                                 <td>
                                                     1. {{ $reservacion->origen }} 
                                                     <br>
@@ -91,29 +103,32 @@
                                                         </td>
                                                     @endif
                                                 @endif
-                                                <td>{{ "$". number_format($reservacion->precio,2) }}</td>
+                                                @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                    <td class="text-center">{{ "$". number_format($reservacion->precio,2) }}</td>
+                                                @endif
                                                 <td>{{ date('d-m-Y H:m',strtotime($reservacion->date_creacion)) }}</td>
-                                                <td>
-                                                    @if(isset($reservacion->status))
-                                                        @if($reservacion->status == "Pending")
-                                                            <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
-                                                                <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                                                            </button>
+                                                @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                    <td>
+                                                        @if(isset($reservacion->status))
+                                                            @if($reservacion->status == "Pending")
+                                                                <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
+                                                                    <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
+                                                                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                                                                </button>
+                                                            @else
+                                                                <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
+                                                                    <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
+                                                                </button>
+                                                            @endif
                                                         @else
                                                             <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
                                                                 <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
                                                             </button>
                                                         @endif
-                                                        
-                                                        <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
-                                                            <i class="fa fa-check-square" aria-hidden="true"></i>
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
-                                                            <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                                                        </button>
-                                                    @endif
-                                                </td>
+                                                    </td>
+                                                @endif
                                             </tr>                                            
                                         @endforeach
                                     </tbody>

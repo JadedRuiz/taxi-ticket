@@ -95,8 +95,8 @@ class TicketExport {
             if($data_vehiculo_operador != null ) {
                 $pdf->SetFont('Raleway-Regular', '', 7);
                 $pdf->setXY(5,79);
-                $pdf->Cell(30,4,"Vehiculo y Marca",0,0,"L");
-                $pdf->Cell(40,4,$data_vehiculo_operador->vehiculo.", ".$data_vehiculo_operador->marca." (".$data_vehiculo_operador->modelo.")",0,0,"L");
+                $pdf->Cell(30,4,"Vehiculo (Marca) - Placa",0,0,"L");
+                $pdf->Cell(40,4,$data_vehiculo_operador->vehiculo.", ".$data_vehiculo_operador->marca." (".$data_vehiculo_operador->modelo.") -".$data_vehiculo_operador->placa,0,0,"L");
                 $pdf->setXY(5,82);
                 $pdf->Cell(30,4,"No. max de maletas",0,0,"L");
                 $pdf->Cell(40,4,$det_viaje->no_maletas,0,0,"L");

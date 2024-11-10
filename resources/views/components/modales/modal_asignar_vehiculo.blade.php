@@ -30,20 +30,13 @@
                                                 <p class="card-text my-0">Operadores: </p>
                                                     @if(count($vehiculo->operadores) > 0)
                                                         <div class="d-flex justify-content-between">
-                                                            <select name="operadores" style="font-size: 12px" class="slcOperadores form-select">
-                                                                <option value="0" selected>Seleccione un operador</option>
-                                                                @foreach($vehiculo->operadores as $operador) 
-                                                                    <option value="{{ $operador->id_vehiculo_operador }}">
-                                                                        {{ $operador->nombres }} {{ $operador->apellidos }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            <button class="btn btn-sm btn-success btnNuevoTurno">
+                                                            <p class="py-0 my-0 operador-title">{{ $vehiculo->operadores[0]->nombres }} {{ $vehiculo->operadores[0]->apellidos }}</p>
+                                                            <button class="btn btn-sm btn-success btnNuevoTurno" data-attr="{{ $vehiculo->operadores[0]->id_vehiculo_operador }}">
                                                                 <i class="fa fa-floppy-o mx-2" aria-hidden="true"></i>
                                                             </button>
                                                         </div>                                                        
                                                     @else
-                                                        <small class="text-danger">Este vehiculo no cuenta con operadores</small>
+                                                        <small class="text-danger">Este vehiculo no cuenta con un operador</small>
                                                     @endif
                                             </div>                        
                                         </div>

@@ -152,7 +152,7 @@ $(document).on("click",".checkSelectOpe",function() {
             text: res.message,
             icon: "error",
             showConfirmButton: false,
-            timer: 1500
+            timer: 3000
         }).then((result) => {
             /* Read more about handling dismissals below */
             if (result.dismiss === Swal.DismissReason.timer) {

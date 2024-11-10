@@ -18,7 +18,7 @@
 --
 -- Table structure for table `det_viaje`
 --
-USE jadeandr_db_taxi;
+
 DROP TABLE IF EXISTS `det_viaje`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -27,6 +27,7 @@ CREATE TABLE `det_viaje` (
   `viaje_id` int DEFAULT NULL,
   `origen_id` varchar(500) DEFAULT NULL,
   `destino_id` varchar(500) DEFAULT NULL,
+  `factura_id` int DEFAULT '0',
   `vehiculo` varchar(150) DEFAULT NULL,
   `no_maletas` int DEFAULT NULL,
   `no_pasajeros` int DEFAULT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE `det_viaje` (
   `telefono` varchar(15) DEFAULT NULL,
   `tipo_pago` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id_det_viaje`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +45,7 @@ CREATE TABLE `det_viaje` (
 
 LOCK TABLES `det_viaje` WRITE;
 /*!40000 ALTER TABLE `det_viaje` DISABLE KEYS */;
-INSERT INTO `det_viaje` VALUES (1,1,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(2,2,'1','1','',4,4,'pureba','jaded@gmail.com','9992726485','Efectivo'),(3,3,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz@gmail.com','9992726485','Efectivo'),(4,4,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(5,5,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(6,6,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(7,7,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(8,8,'1','1','',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','999276485','Efectivo'),(9,9,'1','1','',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(10,10,'1','199','',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(11,11,'1','1','',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(12,12,'1','199','',4,4,'Jaded Enrique Ruiz Pech','razonable3500@gmail.com','9992726485','Efectivo'),(13,13,'1','78','',4,4,'OMAR CRUZ','OMARCRUZ.ROBLES@GMAIL.COM','9993045485','Efectivo'),(14,14,'1','4','',4,4,'Juan','juan_premier@hotmail.com','9992178525','Efectivo'),(15,15,'1','6','',4,4,'Cris','juan_premier@hotmail.com','12345566','Efectivo'),(16,16,'1','2','',4,4,'adsasdads','jadedruiz19995@gmail.com','9992726485','Efectivo'),(17,17,'1','2','',4,4,'Cristho','cristhopperruiz@gmail.com','5550572012','Efectivo'),(18,18,'1','206','',4,4,'Camaro','cristhopperruiz@gmail.com','9999979947','Efectivo'),(19,20,'3','4','MG M5 Series',4,4,'WILLY PERAZA','felixpm21@gmai.com','+529993895423','PayPal'),(20,21,'3','5','MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(21,22,'3','6','MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(22,23,'3','7','MG M5 Series',4,4,'OMAR CRUZ','Omarcruz.robles@gmail.com','+529993045485','Cash'),(23,24,'3','8','BYD KING',4,4,'RAUL GONZALEZ','raulg7508@gmail.com','+529991089068','Credit card on pickup'),(24,25,'3','8','MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(25,26,'1','1','',4,4,'felix','felix@gmail.com','6968473809','Efectivo'),(26,27,'1',NULL,'',4,4,'Gilbert Torres','omar.gilbert1148@gmail.com','9999979947','Efectivo'),(27,28,'1','367','',4,4,'Higo','hugo.cantoe@outlook.com','9992469620','Efectivo'),(28,29,'1','4','',4,4,'Hugo','hugo.cantoe@outlook.com','9992469620','Efectivo'),(29,30,'1','1','',4,4,'esto es una prueba','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(30,31,'1','159','',4,4,'Omar','omarcruz.robles@gmail.com','9993045485','Efectivo');
+INSERT INTO `det_viaje` VALUES (1,1,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(2,2,'1','1',0,'',4,4,'pureba','jaded@gmail.com','9992726485','Efectivo'),(3,3,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz@gmail.com','9992726485','Efectivo'),(4,4,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(5,5,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(6,6,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(7,7,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(8,8,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','999276485','Efectivo'),(9,9,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','jadedruiz19995@gmail.com','9992726485','Efectivo'),(10,10,'1','199',0,'',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(11,11,'1','1',0,'',4,4,'Jaded Enrique Ruiz Pech','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(12,12,'1','199',0,'',4,4,'Jaded Enrique Ruiz Pech','razonable3500@gmail.com','9992726485','Efectivo'),(13,13,'1','78',0,'',4,4,'OMAR CRUZ','OMARCRUZ.ROBLES@GMAIL.COM','9993045485','Efectivo'),(14,14,'1','4',0,'',4,4,'Juan','juan_premier@hotmail.com','9992178525','Efectivo'),(15,15,'1','6',0,'',4,4,'Cris','juan_premier@hotmail.com','12345566','Efectivo'),(16,16,'1','2',0,'',4,4,'adsasdads','jadedruiz19995@gmail.com','9992726485','Efectivo'),(17,17,'1','2',0,'',4,4,'Cristho','cristhopperruiz@gmail.com','5550572012','Efectivo'),(18,18,'1','206',0,'',4,4,'Camaro','cristhopperruiz@gmail.com','9999979947','Efectivo'),(19,20,'3','4',0,'MG M5 Series',4,4,'WILLY PERAZA','felixpm21@gmai.com','+529993895423','PayPal'),(20,21,'3','5',0,'MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(21,22,'3','6',0,'MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(22,23,'3','7',0,'MG M5 Series',4,4,'OMAR CRUZ','Omarcruz.robles@gmail.com','+529993045485','Cash'),(23,24,'3','8',0,'BYD KING',4,4,'RAUL GONZALEZ','raulg7508@gmail.com','+529991089068','Credit card on pickup'),(24,25,'3','8',0,'MG M5 Series',4,4,'OMAR CRUZ','omarcruz.robles@gmail.com','+529993045485','Cash'),(25,26,'1','1',0,'',4,4,'felix','felix@gmail.com','6968473809','Efectivo'),(26,27,'1',NULL,0,'',4,4,'Gilbert Torres','omar.gilbert1148@gmail.com','9999979947','Efectivo'),(27,28,'1','367',0,'',4,4,'Higo','hugo.cantoe@outlook.com','9992469620','Efectivo'),(28,29,'1','4',0,'',4,4,'Hugo','hugo.cantoe@outlook.com','9992469620','Efectivo'),(29,30,'1','1',0,'',4,4,'esto es una prueba','enriqueruiz19995@gmail.com','9992726485','Efectivo'),(30,31,'1','159',0,'',4,4,'Omar','omarcruz.robles@gmail.com','9993045485','Efectivo'),(31,32,'9','10',0,'MG M5 Series',4,4,'OMAR CRUZ NAVARRO','Omarcruz.robles@gmail.com','+529993045485','Cash'),(32,33,'9','10',0,'MG M5 Series',4,4,'OMAR CRUZ NAVARRO','Omarcruz.robles@gmail.com','+529993045485','Cash'),(33,34,'9','10',0,'MG M5 Series',4,4,'OMAR CRUZ NAVARRO','Omarcruz.robles@gmail.com','+529993045485','Cash'),(35,36,'9','10',0,'MG M5 Series',4,4,'OMAR CRUZ NAVARRO','Omarcruz.robles@gmail.com','+529993045485','Cash');
 /*!40000 ALTER TABLE `det_viaje` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +63,7 @@ CREATE TABLE `rel_menu_usuario` (
   `dtCreacion` datetime DEFAULT NULL,
   `activo` int DEFAULT NULL,
   PRIMARY KEY (`id_menu_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,7 +72,7 @@ CREATE TABLE `rel_menu_usuario` (
 
 LOCK TABLES `rel_menu_usuario` WRITE;
 /*!40000 ALTER TABLE `rel_menu_usuario` DISABLE KEYS */;
-INSERT INTO `rel_menu_usuario` VALUES (1,1,1,'2024-10-12 00:00:00',1),(2,1,2,'2024-10-12 00:00:00',1),(3,2,1,'2024-10-12 00:00:00',1),(4,3,1,'2024-10-12 00:00:00',1),(5,2,3,'2024-10-12 00:00:00',1);
+INSERT INTO `rel_menu_usuario` VALUES (1,1,1,'2024-10-12 00:00:00',1),(2,1,2,'2024-10-12 00:00:00',1),(3,2,1,'2024-10-12 00:00:00',1),(4,3,1,'2024-10-12 00:00:00',1),(5,2,3,'2024-10-12 00:00:00',1),(6,4,1,'2024-10-12 00:00:00',1),(7,5,1,'2024-10-12 00:00:00',1),(8,5,3,'2024-10-12 00:00:00',NULL);
 /*!40000 ALTER TABLE `rel_menu_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +90,7 @@ CREATE TABLE `rel_vehiculo_operador` (
   `dtCreacion` datetime DEFAULT NULL,
   `activo` int DEFAULT NULL,
   PRIMARY KEY (`id_vehiculo_operador`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +99,7 @@ CREATE TABLE `rel_vehiculo_operador` (
 
 LOCK TABLES `rel_vehiculo_operador` WRITE;
 /*!40000 ALTER TABLE `rel_vehiculo_operador` DISABLE KEYS */;
-INSERT INTO `rel_vehiculo_operador` VALUES (1,4,2,'2024-10-27 06:24:17',1),(2,1,2,'2024-10-27 06:36:22',1),(3,5,3,'2024-10-27 08:20:04',1),(4,1,3,'2024-10-27 08:20:08',1);
+INSERT INTO `rel_vehiculo_operador` VALUES (6,1,2,'2024-11-10 12:59:15',1),(7,5,1,'2024-11-10 01:07:39',1),(8,8,3,'2024-11-10 01:07:45',1);
 /*!40000 ALTER TABLE `rel_vehiculo_operador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +117,7 @@ CREATE TABLE `rel_viaje_vehiculo_operador` (
   `dtCreacion` datetime DEFAULT NULL,
   `activo` int DEFAULT NULL,
   PRIMARY KEY (`id_viaje_vehiculo_operador`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +126,7 @@ CREATE TABLE `rel_viaje_vehiculo_operador` (
 
 LOCK TABLES `rel_viaje_vehiculo_operador` WRITE;
 /*!40000 ALTER TABLE `rel_viaje_vehiculo_operador` DISABLE KEYS */;
-INSERT INTO `rel_viaje_vehiculo_operador` VALUES (2,24,2,'2024-10-27 08:48:44',1),(3,25,2,'2024-10-27 08:53:02',1);
+INSERT INTO `rel_viaje_vehiculo_operador` VALUES (2,24,2,'2024-10-27 08:48:44',1),(3,25,2,'2024-10-27 08:53:02',1),(4,24,1,'2024-10-27 10:21:25',1),(5,23,2,'2024-11-03 02:25:03',1),(6,21,1,'2024-11-03 02:27:22',1);
 /*!40000 ALTER TABLE `rel_viaje_vehiculo_operador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -205,7 +206,7 @@ CREATE TABLE `tbl_direcciones_webhook` (
   `precio` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `tipo` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id_direccion`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +215,7 @@ CREATE TABLE `tbl_direcciones_webhook` (
 
 LOCK TABLES `tbl_direcciones_webhook` WRITE;
 /*!40000 ALTER TABLE `tbl_direcciones_webhook` DISABLE KEYS */;
-INSERT INTO `tbl_direcciones_webhook` VALUES (3,2,'AEROPUERTO MERIDA','AEROPUERTO INTERNACIONAL DE MéRIDA, MéRIDA, YUC., MéXICO','','','','origen'),(4,2,'GRAN PLAZA MERIDA','GRAN PLAZA, GONZALO GUERRERO, MéRIDA, YUC., MéXICO','35','15.2','450.00','destino'),(5,2,'CENTRO MEDICO PENSIONES','CENTRO MéDICO PENSIONES, CALLE 7, GARCíA GINERéS, MéRIDA, YUC., MéXICO','22','9','280.00','destino'),(6,2,'ANAHUAC MAYAB','UNIVERSIDAD ANáHUAC MAYAB, CARR. MéRIDA - PROGRESO, MéRIDA, YUC., MéXICO','44','29','700.00','destino'),(7,2,'MERCADO SAN BENITO','MERCADO SAN BENITO, CALLE 54, CENTRO, MéRIDA, YUC., MéXICO','22','8.1','350.00','destino'),(8,2,'CITY CENTER MERIDA','CITY CENTER, AVENIDA ANDRéS GARCíA LAVíN, SAN RAMóN NORTE, MéRIDA, YUC., MéXICO','33','23','550.00','destino');
+INSERT INTO `tbl_direcciones_webhook` VALUES (3,2,'AEROPUERTO MERIDA','AEROPUERTO INTERNACIONAL DE MéRIDA, MéRIDA, YUC., MéXICO','','','','origen'),(4,2,'GRAN PLAZA MERIDA','GRAN PLAZA, GONZALO GUERRERO, MéRIDA, YUC., MéXICO','35','15.2','450.00','destino'),(5,2,'CENTRO MEDICO PENSIONES','CENTRO MéDICO PENSIONES, CALLE 7, GARCíA GINERéS, MéRIDA, YUC., MéXICO','22','9','280.00','destino'),(6,2,'ANAHUAC MAYAB','UNIVERSIDAD ANáHUAC MAYAB, CARR. MéRIDA - PROGRESO, MéRIDA, YUC., MéXICO','44','29','700.00','destino'),(7,2,'MERCADO SAN BENITO','MERCADO SAN BENITO, CALLE 54, CENTRO, MéRIDA, YUC., MéXICO','22','8.1','350.00','destino'),(8,2,'CITY CENTER MERIDA','CITY CENTER, AVENIDA ANDRéS GARCíA LAVíN, SAN RAMóN NORTE, MéRIDA, YUC., MéXICO','33','23','550.00','destino'),(9,1,'AEROPUERTO MERIDA','AEROPUERTO INTERNACIONAL DE MéRIDA, MéRIDA, YUC., MéXICO','','','','origen'),(10,1,'ALCALA MARTIN','ALCALá MARTíN, MéRIDA, YUC., MéXICO','26','10.7','450.00','destino');
 /*!40000 ALTER TABLE `tbl_direcciones_webhook` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -246,6 +247,37 @@ INSERT INTO `tbl_empresas` VALUES (1,'Frente Único de Trabajadores del Volante'
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tbl_facturas`
+--
+
+DROP TABLE IF EXISTS `tbl_facturas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbl_facturas` (
+  `id_factura` int NOT NULL AUTO_INCREMENT,
+  `razon_social` varchar(400) DEFAULT NULL,
+  `rfc` varchar(20) DEFAULT NULL,
+  `calle` varchar(400) DEFAULT NULL,
+  `no_calle` varchar(200) DEFAULT NULL,
+  `ciudad` varchar(400) DEFAULT NULL,
+  `estado` varchar(500) DEFAULT NULL,
+  `codigo_postal` varchar(10) DEFAULT NULL,
+  `pais` varchar(400) DEFAULT NULL,
+  PRIMARY KEY (`id_factura`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_facturas`
+--
+
+LOCK TABLES `tbl_facturas` WRITE;
+/*!40000 ALTER TABLE `tbl_facturas` DISABLE KEYS */;
+INSERT INTO `tbl_facturas` VALUES (1,'Omar cruz','Cuno771110px6','81c','812','Merida','Yucatan','97000','MX'),(2,'Omar cruz','Cuno771110px6','81c','812','Merida','Yucatan','97000','MX'),(3,'Omar cruz','Cuno771110px6','81c','812','Merida','Yucatan','97000','MX'),(5,'Omar cruz','Cuno771110px6','81c','812','Merida','Yucatan','97000','MX');
+/*!40000 ALTER TABLE `tbl_facturas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tbl_fotografias`
 --
 
@@ -269,7 +301,7 @@ CREATE TABLE `tbl_fotografias` (
 
 LOCK TABLES `tbl_fotografias` WRITE;
 /*!40000 ALTER TABLE `tbl_fotografias` DISABLE KEYS */;
-INSERT INTO `tbl_fotografias` VALUES (1,'image','/img/Empresas/MyRide/vehiculos/1730059428.jpg','jpg','2024-10-27 08:03:48',1),(2,'url','https://img.freepik.com/foto-gratis/vista-coche-3d_23-2150796894.jpg','jpg','2024-10-23 11:39:58',1),(3,'image','/img/Empresas/MyRide/operadores/1729970465.png','png','2024-10-26 07:21:05',1),(4,'image','/img/Empresas/MyRide/operadores/1729971592.jpg','jpg','2024-10-26 07:39:51',1),(5,'image','/img/Empresas/MyRide/operadores/1730039855.jpg','jpg','2024-10-27 02:37:35',1),(6,'image','/img/Empresas/MyRide/vehiculos/1730060382.png','png','2024-10-27 08:19:42',1);
+INSERT INTO `tbl_fotografias` VALUES (1,'image','/img/Empresas/MyRide/vehiculos/1730059428.jpg','jpg','2024-10-27 08:03:48',1),(2,'url','https://img.freepik.com/foto-gratis/vista-coche-3d_23-2150796894.jpg','jpg','2024-10-23 11:39:58',1),(3,'image','/img/Empresas/MyRide/operadores/1729970465.png','png','2024-10-26 07:21:05',1),(4,'image','/img/Empresas/MyRide/operadores/1729971592.jpg','jpg','2024-10-26 07:39:51',1),(5,'image','/img/Empresas/MyRide/operadores/1730656703.jpg','jpg','2024-11-03 05:58:23',1),(6,'image','/img/Empresas/MyRide/vehiculos/1730060382.png','png','2024-10-27 08:19:42',1);
 /*!40000 ALTER TABLE `tbl_fotografias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -336,7 +368,7 @@ CREATE TABLE `tbl_operadores` (
 
 LOCK TABLES `tbl_operadores` WRITE;
 /*!40000 ALTER TABLE `tbl_operadores` DISABLE KEYS */;
-INSERT INTO `tbl_operadores` VALUES (1,0,'JADED ENRIQUE','RUIZ PECH','jadedruiz19995@gmail.com','218371','1234','2024-10-16','','23',NULL,NULL,NULL,1,'','2024-10-26 07:14:04',1),(2,0,'JADED ENRIQUE','RUIZ PECH','jadedruiz19995@gmail.com','9992726485','1294127','2024-10-17','RUPJ951215HYNZCD02','28','2024-10-16','2024-10-24','2024-10-17',1,'','2024-10-26 07:19:58',1),(3,3,'RENAN','BARRERA','jadedruiz19995@gmail.com','9992726495','12941227','2024-10-31','RUPJ951215HYNZCD01','43','2024-10-16','2024-10-24','2024-10-17',1,'','2024-10-26 07:21:05',1),(4,4,'MARIA LARUA','ECHEVERRIA LOPEZ','marialuara@gmail.com','9994145595','124987','2024-10-24','MARI141299MYNZCD93','24','2024-10-16','2024-10-24','2024-10-23',1,'','2024-10-26 07:39:52',1),(5,5,'MARIO','CETINA SOLIS','mariocetina@gmail.com','9993134323','91284109782','2024-10-31','MARI871223HYNZBV03','34','2024-10-24','2024-10-31','2024-10-17',1,'','2024-10-27 02:37:36',1),(6,0,'ESTO ES','UNA PRUEBA','correoprueba@gmail.com','9992726485','12839126','2024-10-31','RUPJ951215HYNZCD03','34','2024-10-31','2024-10-31','2024-10-24',2,'','2024-10-27 02:41:46',1),(7,0,'OTRA','PRUEBA',NULL,'9993134924','4982734','2024-10-31','','23',NULL,NULL,NULL,3,'','2024-10-27 02:43:02',1),(8,0,'ESTE ES','OTRO MEN','otromen@gmail.com','9999999999','99999999','2024-10-18','999999999999999999','99','2024-10-31','2024-10-31','2024-10-30',1,'','2024-10-27 03:28:16',1);
+INSERT INTO `tbl_operadores` VALUES (1,0,'JADED ENRIQUE','RUIZ PECH','jadedruiz19995@gmail.com','218371','1234','2024-10-16','','23',NULL,NULL,NULL,1,'','2024-10-26 07:14:04',1),(2,0,'JADED ENRIQUE','RUIZ PECH','jadedruiz19995@gmail.com','9992726485','1294127','2024-10-17','RUPJ951215HYNZCD02','28','2024-10-16','2024-10-24','2024-10-17',1,'','2024-10-26 07:19:58',1),(3,3,'RENAN','BARRERA','jadedruiz19995@gmail.com','9992726495','12941227','2024-10-31','RUPJ951215HYNZCD01','43','2024-10-16','2024-10-24','2024-10-17',1,'','2024-10-26 07:21:05',1),(4,4,'MARIA LARUA','ECHEVERRIA LOPEZ','marialuara@gmail.com','9994145595','124987','2024-10-24','MARI141299MYNZCD93','24','2024-10-16','2024-10-24','2024-10-23',1,'','2024-10-26 07:39:52',1),(5,5,'MARIO ANTONIO','CETINA SOLIS','mariocetina@gmail.com','9993134323','91284109782','2024-10-31','MARI871223HYNZBV03','34','2024-10-24','2024-10-31','2024-10-17',1,'','2024-11-03 05:58:23',1),(6,0,'ESTO ES','UNA PRUEBA','correoprueba@gmail.com','9992726485','12839126','2024-10-31','RUPJ951215HYNZCD03','34','2024-10-31','2024-10-31','2024-10-24',2,'','2024-10-27 02:41:46',1),(7,0,'OTRA','PRUEBA',NULL,'9993134924','4982734','2024-10-31','','23',NULL,NULL,NULL,3,'','2024-10-27 02:43:02',1),(8,0,'ESTE ES','OTRO MEN','otromen@gmail.com','9999999999','99999999','2024-10-18','999999999999999999','99','2024-10-31','2024-10-31','2024-10-30',1,'','2024-10-27 03:28:16',1);
 /*!40000 ALTER TABLE `tbl_operadores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,6 +399,63 @@ INSERT INTO `tbl_origenes` VALUES (1,'TERMINAL DE AUTOBUSES ADO',NULL,1);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tbl_perfiles`
+--
+
+DROP TABLE IF EXISTS `tbl_perfiles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbl_perfiles` (
+  `id_perfil` int NOT NULL AUTO_INCREMENT,
+  `perfil` varchar(250) DEFAULT NULL,
+  `lectura` int DEFAULT NULL,
+  `escritura` int DEFAULT NULL,
+  `edicion` int DEFAULT NULL,
+  `depuracion` int DEFAULT NULL,
+  `dtCreacion` date DEFAULT NULL,
+  `activo` int DEFAULT NULL,
+  PRIMARY KEY (`id_perfil`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_perfiles`
+--
+
+LOCK TABLES `tbl_perfiles` WRITE;
+/*!40000 ALTER TABLE `tbl_perfiles` DISABLE KEYS */;
+INSERT INTO `tbl_perfiles` VALUES (1,'Administrador',1,1,1,1,'2024-11-10',1),(2,'Operador',1,0,1,0,'2024-11-10',1),(3,'Cajera',1,0,0,0,'2024-11-10',1);
+/*!40000 ALTER TABLE `tbl_perfiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_turnos`
+--
+
+DROP TABLE IF EXISTS `tbl_turnos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbl_turnos` (
+  `id_turno` int NOT NULL AUTO_INCREMENT,
+  `vehiculo_operador_id` int DEFAULT NULL,
+  `empresa_id` int DEFAULT NULL,
+  `dtCreacion` datetime DEFAULT NULL,
+  `activo` int DEFAULT NULL,
+  PRIMARY KEY (`id_turno`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_turnos`
+--
+
+LOCK TABLES `tbl_turnos` WRITE;
+/*!40000 ALTER TABLE `tbl_turnos` DISABLE KEYS */;
+INSERT INTO `tbl_turnos` VALUES (6,2,2,'2024-11-03 02:12:57',0),(7,1,2,'2024-11-03 02:14:48',0),(8,NULL,2,'2024-11-10 01:01:37',1),(9,6,2,'2024-11-10 01:06:47',1),(10,7,2,'2024-11-10 01:08:01',1);
+/*!40000 ALTER TABLE `tbl_turnos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tbl_usuarios`
 --
 
@@ -375,13 +464,14 @@ DROP TABLE IF EXISTS `tbl_usuarios`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_usuarios` (
   `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `perfil_id` int DEFAULT NULL,
   `nombre` varchar(150) DEFAULT NULL,
   `usuario` varchar(150) DEFAULT NULL,
   `password` varchar(150) DEFAULT NULL,
   `empresa_id` int DEFAULT NULL,
   `activo` int DEFAULT NULL,
   PRIMARY KEY (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,7 +480,7 @@ CREATE TABLE `tbl_usuarios` (
 
 LOCK TABLES `tbl_usuarios` WRITE;
 /*!40000 ALTER TABLE `tbl_usuarios` DISABLE KEYS */;
-INSERT INTO `tbl_usuarios` VALUES (1,'Admin Ado','admin.futv','eVjIwMVZ3PT0=0djIwMjQYx=',1,1),(2,'Admin MyRide','admin.myride','LVm0weGQxSXlSWGRPVldoVVYwZDRWbGxYY3pGVmJGcHlWV3RLVUZWVU1Eaz0=yaWRlMjAyNA=tz=',2,1),(3,'Vendedor Ado','vende.futv','eV2tjeFZ3PT0=uZGVkb3IyMDIYx0',1,1);
+INSERT INTO `tbl_usuarios` VALUES (1,NULL,'Admin Ado','admin.futv','eVjIwMVZ3PT0=0djIwMjQYx=',1,1),(2,NULL,'Admin MyRide','admin.myride','LVm0weGQxSXlSWGRPVldoVVYwZDRWbGxYY3pGVmJGcHlWV3RLVUZWVU1Eaz0=yaWRlMjAyNA=tz=',2,1),(3,NULL,'Vendedor Ado','vende.futv','eV2tjeFZ3PT0=uZGVkb3IyMDIYx0',1,1),(4,3,'Caja No.1','cajauno.myride','LVm0wd2VFNUhSWGROVldoVVYwZDRWMWxzVWxkVmJGcHlWV3RLVUZWVU1Eaz0=1XzBHOXktz=',2,1),(5,2,'Operador MyRide','operador.myride','AVmtSQ1UxUm5QVDA95NkttMC8Yt=',2,1);
 /*!40000 ALTER TABLE `tbl_usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -447,7 +537,7 @@ CREATE TABLE `tbl_viajes` (
   `comentarios` varchar(500) DEFAULT NULL,
   `date_creacion` datetime DEFAULT NULL,
   PRIMARY KEY (`id_viaje`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -456,7 +546,7 @@ CREATE TABLE `tbl_viajes` (
 
 LOCK TABLES `tbl_viajes` WRITE;
 /*!40000 ALTER TABLE `tbl_viajes` DISABLE KEYS */;
-INSERT INTO `tbl_viajes` VALUES (1,1,'FV-20240909070904','Reserva FV-20240909070904','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-09 07:09:04'),(2,1,'FV-20240910090938','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-10 09:09:38'),(3,1,'FV-20240910090954','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-10 09:09:54'),(4,1,'FV-20240912070946','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:46'),(5,1,'FV-20240912070929','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:29'),(6,1,'FV-20240912070926','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:26'),(7,1,'FV-20240912070945','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:45'),(8,1,'FV-20240912070953','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:53'),(9,1,'FV-20240912080910','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 08:09:10'),(10,1,'FV-20240912090927','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-12 09:09:27'),(11,1,'FV-20240917030929','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 03:09:29'),(12,1,'FV-20240917090910','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 09:09:10'),(13,1,'FV-20240917120954','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 12:09:54'),(14,1,'FV-20240919110920','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 11:09:20'),(15,1,'FV-20240919030908','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 03:09:08'),(16,1,'FV-20240919040941','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 04:09:41'),(17,1,'FV-20240919070929','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 07:09:29'),(18,1,'FV-20240920110902','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-20 11:09:02'),(20,2,'24142','Reserva Myride 24142','Pending','Distancia','Viaje sencillo',NULL,'2024-09-11 07:30:00'),(21,2,'24144','Reserva Myride 24144','Pending','Distancia','Viaje sencillo',NULL,'2024-09-21 06:00:00'),(22,2,'24145','Reserva Myride 24145','Pending','Distancia','Viaje sencillo',NULL,'2024-09-20 14:28:00'),(23,2,'24146','Reserva Myride 24146','Pending','Distancia','Viaje sencillo',NULL,'2024-09-22 05:30:00'),(24,2,'24147','Reserva Myride 24147','2','Distancia','Viaje sencillo',NULL,'2024-09-28 23:30:00'),(25,2,'24148','Reserva Myride 24148','2','Distancia','Viaje sencillo',NULL,'2024-09-26 19:25:00'),(26,1,'FV-20240926050959','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-26 05:09:59'),(27,1,'FV-20240928030942','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-28 03:09:42'),(28,1,'FV-20241002021019','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-02 02:10:19'),(29,1,'FV-20241002021046','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-02 02:10:46'),(30,1,'FV-20241005111005','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-05 11:10:05'),(31,1,'FV-20241010091057','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-10 09:10:57');
+INSERT INTO `tbl_viajes` VALUES (1,1,'FV-20240909070904','Reserva FV-20240909070904','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-09 07:09:04'),(2,1,'FV-20240910090938','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-10 09:09:38'),(3,1,'FV-20240910090954','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-10 09:09:54'),(4,1,'FV-20240912070946','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:46'),(5,1,'FV-20240912070929','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:29'),(6,1,'FV-20240912070926','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:26'),(7,1,'FV-20240912070945','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:45'),(8,1,'FV-20240912070953','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 07:09:53'),(9,1,'FV-20240912080910','Viaje Reservado','1','Mi Taxi','Viaje Sencillo','VIAJE MI TAXI','2024-09-12 08:09:10'),(10,1,'FV-20240912090927','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-12 09:09:27'),(11,1,'FV-20240917030929','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 03:09:29'),(12,1,'FV-20240917090910','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 09:09:10'),(13,1,'FV-20240917120954','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-17 12:09:54'),(14,1,'FV-20240919110920','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 11:09:20'),(15,1,'FV-20240919030908','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 03:09:08'),(16,1,'FV-20240919040941','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 04:09:41'),(17,1,'FV-20240919070929','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-19 07:09:29'),(18,1,'FV-20240920110902','Viaje Reservado','1','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-20 11:09:02'),(20,2,'24142','Reserva Myride 24142','Pending','Distancia','Viaje sencillo',NULL,'2024-09-11 07:30:00'),(21,2,'24144','Reserva Myride 24144','En servicio','Distancia','Viaje sencillo',NULL,'2024-09-21 06:00:00'),(22,2,'24145','Reserva Myride 24145','Pending','Distancia','Viaje sencillo',NULL,'2024-09-20 14:28:00'),(23,2,'24146','Reserva Myride 24146','En servicio','Distancia','Viaje sencillo',NULL,'2024-09-22 05:30:00'),(24,2,'24147','Reserva Myride 24147','En servicio','Distancia','Viaje sencillo',NULL,'2024-09-28 23:30:00'),(25,2,'24148','Reserva Myride 24148','En servicio','Distancia','Viaje sencillo',NULL,'2024-09-26 19:25:00'),(26,1,'FV-20240926050959','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-26 05:09:59'),(27,1,'FV-20240928030942','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-09-28 03:09:42'),(28,1,'FV-20241002021019','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-02 02:10:19'),(29,1,'FV-20241002021046','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-02 02:10:46'),(30,1,'FV-20241005111005','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-05 11:10:05'),(31,1,'FV-20241010091057','Viaje Reservado','Pendiente','TAXI SEGURO ADO','Viaje Sencillo','Sin comentarios','2024-10-10 09:10:57'),(32,2,'24462','Reserva Myride 24462','Pending','Distancia','Viaje sencillo',NULL,'2024-11-10 14:00:00'),(33,2,'24462','Reserva Myride 24462','Pending','Distancia','Viaje sencillo',NULL,'2024-11-10 14:00:00'),(34,2,'24462','Reserva Myride 24462','Pending','Distancia','Viaje sencillo',NULL,'2024-11-10 14:00:00'),(36,2,'24462','Reserva Myride 24462','Pending','Distancia','Viaje sencillo',NULL,'2024-11-10 14:00:00');
 /*!40000 ALTER TABLE `tbl_viajes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -469,4 +559,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-27 14:53:33
+-- Dump completed on 2024-11-10 13:30:30

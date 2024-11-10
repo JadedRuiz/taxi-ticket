@@ -252,6 +252,26 @@ class OperadorController extends Controller
     // Desc: Método para asignar operador a vehiculo
     public function asignarOperadorVehiculo(Request $request) {
         try {
+            #region [Validaciones]
+                $validar_operador = DB::table("rel_vehiculo_operador")
+                ->select("tblV.vehiculo")
+                ->leftJoin("tbl_vehiculos as tblV","tblV.id_vehiculo","=","vehiculo_id")
+                ->where("operador_id",$request->id_operador)
+                ->where("vehiculo_id","<>",$request->id_vehiculo)
+                ->where("rel_vehiculo_operador.activo",1)
+                ->first();
+                if($validar_operador) {
+                    return ["ok" => false, "message" => "Este operador ya ha sido asigando al vehiculo: ".$validar_operador->vehiculo];
+                }
+                $validar_cantidad_operadores = DB::table("rel_vehiculo_operador")
+                ->where("vehiculo_id",$request->id_vehiculo)
+                ->where("activo",1)
+                ->count();
+                if($validar_cantidad_operadores >= 1) {
+                    return ["ok" => false, "message" => "Este vehiculo solo puede tener un operador por horario laboral"];
+                }
+            #endregion
+            //Valida Status
             $validar = DB::table("rel_vehiculo_operador")
             ->where("operador_id",$request->id_operador)
             ->where("vehiculo_id",$request->id_vehiculo)

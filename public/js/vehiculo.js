@@ -8,6 +8,10 @@ $(window).on("load", function() {
         columnDefs: [
             { targets: [0,2,3,4,5], orderable: false}
         ],
+        lengthMenu: [[8,15,25,50,-1],["8","15","25","50","Todos"]],
+        scrollY: '500px',
+        scrollCollapse: true,
+        pageLength: 8,
         pagingType: "simple_numbers",
         language: {
             "decimal": "",

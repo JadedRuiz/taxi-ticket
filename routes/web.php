@@ -6,6 +6,7 @@ use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\VehiculosController;
 use App\Http\Controllers\OperadorController;
+use App\Http\Controllers\Controller;
 
 #region [Vistas]
     //Página Principal
@@ -25,6 +26,7 @@ use App\Http\Controllers\OperadorController;
 
 #region [Consumo Admin]
     Route::group(['as' => 'admin.','prefix' => 'admin'], function () {
+        Route::get('encrypt', [AdminController::class, 'encriptar']);
         #region [Páginas Admin]
             //Home
             Route::get('/', [AdminController::class, 'index'])->name('home');
