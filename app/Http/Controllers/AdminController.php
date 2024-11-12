@@ -23,7 +23,7 @@ class AdminController extends Controller
             $entries = ['public/js/admin.js','public/sass/admin.scss'];
             $columnas = null;
             if(in_array($user->permisos->perfil, ["Cajera","Administrador"])) {
-                $columnas = ["id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos"];
+                $columnas = ["id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago"];
             }
             if(in_array($user->permisos->perfil, ["Operador"])) {
                 $columnas = ["id_viaje","folio","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblV.status", "tblO.nombres","tblO.apellidos"];
@@ -37,6 +37,7 @@ class AdminController extends Controller
             ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
             ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
             ->where("tblV.empresa_id",$user->id_empresa)
+            ->where("tblV.date_creacion",'>',date('Y-m-d')." 06:00:00")
             ->orderBy("tblV.date_creacion",'DESC')
             ->orderBy("tblV.status","DESC")
             ->get();
@@ -148,8 +149,12 @@ class AdminController extends Controller
     public function webHookMyRide($id_empresa, Request $body) {
 
         try{
+            //Validación
+            $validar = Viaje::where("folio",$body["post"]["ID"])->first();
+            if($validar) {
+                return ["ok" => false, "data" => "Este folio ya ha sido registrado"];
+            }
             DB::beginTransaction();
-
             //Insertamos el viaje
             $viaje = Viaje::create([
                 "empresa_id" => $id_empresa,
@@ -208,6 +213,12 @@ class AdminController extends Controller
                 $id_factura = DB::table("tbl_facturas")
                 ->insertGetId($data_facturacion);
             }
+            $id_usuario=0;
+            if(isset($body["meta"]["form_element_field"]) && is_array($body["meta"]["form_element_field"]) && count($body["meta"]["form_element_field"]) > 0) {
+                if(isset($body["meta"]["form_element_field"][0]["text"]) && isset($body["meta"]["form_element_field"][0]["value"])) {
+                    $id_usuario = $body["meta"]["form_element_field"][0]["value"];
+                }
+            }
             //Insertamos detalle viaje
             $det_viaje= DetViaje::create([
                 "viaje_id" => $viaje->id_viaje,
@@ -220,7 +231,8 @@ class AdminController extends Controller
                 "nombre" => strtoupper($this->Utf8_ansi($body["meta"]["client_contact_detail_first_name"]) ." ". $this->Utf8_ansi($body["meta"]["client_contact_detail_last_name"])),
                 "correo" => $this->Utf8_ansi($body["meta"]["client_contact_detail_email_address"]),
                 "telefono" => $this->Utf8_ansi($body["meta"]["client_contact_detail_phone_number"]),
-                "tipo_pago" => $body["meta"]["payment_name"]
+                "tipo_pago" => $body["meta"]["payment_name"],
+                "usuario_id" => $id_usuario
             ]);
 
             //Enviamos correo para avisar al admin que se realizo un viaje con factura

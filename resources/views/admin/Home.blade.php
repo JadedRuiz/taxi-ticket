@@ -104,7 +104,7 @@
                                                     @endif
                                                 @endif
                                                 @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
-                                                    <td class="text-center">{{ "$". number_format($reservacion->precio,2) }}</td>
+                                                    <td class="text-center cp" title="{{ $reservacion->tipo_pago }}">{{ "$". number_format($reservacion->precio,2) }}</td>
                                                 @endif
                                                 <td>{{ date('d-m-Y H:m',strtotime($reservacion->date_creacion)) }}</td>
                                                 @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))

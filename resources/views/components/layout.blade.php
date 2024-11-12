@@ -52,21 +52,17 @@
         <div class="top-nav">
             <nav class="navbar navbar-light navbar-expand-lg">
                 <div class="collapse navbar-collapse" id="topnav-menu-content">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         @foreach($userData->menu as $menu)
                             <li class="nav-item">
                                 <a class="nav-link active" href="{{ route($menu->ruta) }}">
                                 <span class="{{ $menu->icono }}"></span> &nbsp; {{ $menu->titulo }}</a>
                             </li>
                         @endforeach
-                        
-                        {{-- @if ($tipoPanel)
-                            <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('admin.destinos') }}">
-                                <span class="oi--map-marker"></span> &nbsp; Destinos</a>
-                            </li>
-                        @endif --}}
                     </ul>
+                    <span class="navbar-text">
+                        <strong>{{ date('d-m-Y h:i:s') }}</strong> 
+                    </span>
                 </div>
             </nav>
         </div>
