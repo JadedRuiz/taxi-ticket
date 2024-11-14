@@ -6,7 +6,7 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item">Admin</li>
-                    <li class="breadcrumb-item active">Inicio</li>
+                    <li class="breadcrumb-item active" id="prueba">Inicio</li>
                 </ol>
             </div>
         </div>

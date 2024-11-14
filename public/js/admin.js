@@ -32,7 +32,9 @@ $(window).on("load", function() {
             }
         }
     });
-    
+
+    // actualizaViajes();
+    actualizarTurnos();
 });
 
 $(document).on("click",".btnTicket", function() {
@@ -136,23 +138,33 @@ $(document).on("click",".btnAsignarOperador", function() {
     });
 })
 
+function actualizaViajes() {
+    Echo.private('client.1')
+    .listen('UpdateClient', (e) => {
+        console.log(e);
+    });
+}
+
 function actualizarTurnos() {
-    let html ="";
-    $.get(window.routes.obtenerTurnosAsync,(res) => {
-        if(res.ok && res.data.length > 0) {
-            res.data.forEach((element, index) => {
-                let nombre = (element.nombres+" "+element.apellidos).substring(0,25)
-                html+= `
-                    <li class="list-group-item row px-0 mx-0 d-flex">
-                        <div class="col-3 px-0 border-orden">${ index+1 }</div>
-                        <div class="col-9 d-flex flex-column">
-                            <p class="py-0 my-0 lstTitulo">${ nombre }</p>
-                            <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
-                        </div>
-                    </li>
-                `;
-            });
-            $(".lstTurnos").html(html);
-        }
-    })
+    // console.log("entro");
+    Echo.channel('turnos-event')
+    .listen('ActualizarTurno', (e) => {
+        console.log(e);
+    });
+    // let html ="";
+    // if(res.ok && res.data.length > 0) {
+    //     res.data.forEach((element, index) => {
+    //         let nombre = (element.nombres+" "+element.apellidos).substring(0,25)
+    //         html+= `
+    //             <li class="list-group-item row px-0 mx-0 d-flex">
+    //                 <div class="col-3 px-0 border-orden">${ index+1 }</div>
+    //                 <div class="col-9 d-flex flex-column">
+    //                     <p class="py-0 my-0 lstTitulo">${ nombre }</p>
+    //                     <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
+    //                 </div>
+    //             </li>
+    //         `;
+    //     });
+    //     $(".lstTurnos").html(html);
+    // }
 }

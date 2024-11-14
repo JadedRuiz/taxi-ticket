@@ -13,6 +13,8 @@ use App\Models\DetViajeModel as DetViaje;
 use App\Http\Controllers\VehiculosController as Vehiculos;
 use App\Models\OperadorModel as Operador;
 use Illuminate\Support\Facades\Mail;
+use App\Events\UpdateClient;
+use App\Events\ActualizarTurno;
 
 class AdminController extends Controller
 {
@@ -145,6 +147,10 @@ class AdminController extends Controller
         return $this->encode_json($body["password"]);
     }
 
+    public function pruebaSocket() {
+        event(new UpdateClient("1", "Hola mundo"));
+        return ["ok" => true, "data" => "funciono?"];
+    }
     //WEBHOOK's
     public function webHookMyRide($id_empresa, Request $body) {
 
@@ -163,7 +169,7 @@ class AdminController extends Controller
                 "status" => $body["booking_status_name"], //Pendiente
                 "tipo_servicio" => $body["service_type_name"],
                 "tipo_viaje" => $body["transfer_type_name"],
-                "date_creacion" => $body["meta"]["pickup_datetime"],
+                "date_creacion" => $body["post"]["post_date"],
                 "comentarios" => $body["comment"]
             ]);
             //Insertamos las direcciones
@@ -243,6 +249,8 @@ class AdminController extends Controller
                 });
             }
 
+            event(new UpdateClient("cliente.1", "Hola mundo"));
+
             DB::commit();
 
             return ['ok' => true, "data" => "Registro Exitoso"];
@@ -298,6 +306,12 @@ class AdminController extends Controller
                 "dtCreacion" => date("Y-m-d h:i:s"),
                 "activo" => 1
             ]);
+
+            //Lanzamos el evento para actualizar todos los clientes
+            set_time_limit(300);
+            dd(openssl_get_cert_locations());
+            $turnosActualizados = json_encode($this->obtenerTurnos($user));
+            broadcast(new ActualizarTurno($turnosActualizados));
             return [ "ok" => true, "data" => "Turno agregado con exito"];
         } catch(\PdoException | \Error | \Exception $e) {
             Log::error("ERROR En método [asignarVehiculoOperador]: ".$e->getMessage());

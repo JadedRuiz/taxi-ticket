@@ -27,6 +27,7 @@ use App\Http\Controllers\Controller;
 #region [Consumo Admin]
     Route::group(['as' => 'admin.','prefix' => 'admin'], function () {
         Route::get('encrypt', [AdminController::class, 'encriptar']);
+        Route::get('pruebaSocket', [AdminController::class, 'pruebaSocket']);
         #region [Páginas Admin]
             //Home
             Route::get('/', [AdminController::class, 'index'])->name('home');
