@@ -75,7 +75,7 @@
                                             @endif
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="viajes">
                                         @foreach($reservaciones as $reservacion)
                                             <tr>
                                                 <td>{{ $reservacion->folio }}</td>
@@ -169,6 +169,7 @@
                 'obtenerTurnosAsync' : '{{ route('admin.api.obtenerTurnosAsync') }}',
                 'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}'
             }
+            window.user = @json($user);
         </script>
     </x-slot> 
 </x-layout>  

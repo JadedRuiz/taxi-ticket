@@ -53,7 +53,7 @@ class AdminController extends Controller
     public function login(Request $body) {
         try {
             $user = DB::table("tbl_usuarios as tblU")
-            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook","perfil_id")
+            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook","perfil_id","caja_id")
             ->leftJoin("tbl_empresas as tblE","tblE.id_empresa","=","tblU.empresa_id")
             ->where("usuario",$body["usuario"])
             ->where("tblU.activo",1)
@@ -79,7 +79,8 @@ class AdminController extends Controller
                         "empresa" => $user->empresa,
                         "logo_path" => $user->logo_path,
                         "menu" => $menu,
-                        "permisos" => $permisos
+                        "permisos" => $permisos,
+                        "caja_id" => $user->caja_id
                     ];
                     Session::put("data-user",$this->encode_json(json_encode($user_data)));
                     return ["ok" => true, "data" => "Logueo Exitoso"];
@@ -153,7 +154,6 @@ class AdminController extends Controller
     }
     //WEBHOOK's
     public function webHookMyRide($id_empresa, Request $body) {
-
         try{
             //Validación
             $validar = Viaje::where("folio",$body["post"]["ID"])->first();
@@ -249,8 +249,11 @@ class AdminController extends Controller
                 });
             }
 
-            event(new UpdateClient("cliente.1", "Hola mundo"));
-
+            //Actualizar viajes en tiempo real
+            broadcast(new UpdateClient($id_usuario, [
+                "viaje" => $viaje,
+                "det_viaje" => $det_viaje
+            ]));
             DB::commit();
 
             return ['ok' => true, "data" => "Registro Exitoso"];
@@ -308,10 +311,9 @@ class AdminController extends Controller
             ]);
 
             //Lanzamos el evento para actualizar todos los clientes
-            set_time_limit(300);
-            dd(openssl_get_cert_locations());
-            $turnosActualizados = json_encode($this->obtenerTurnos($user));
+            $turnosActualizados = $this->obtenerTurnos($user);
             broadcast(new ActualizarTurno($turnosActualizados));
+
             return [ "ok" => true, "data" => "Turno agregado con exito"];
         } catch(\PdoException | \Error | \Exception $e) {
             Log::error("ERROR En método [asignarVehiculoOperador]: ".$e->getMessage());

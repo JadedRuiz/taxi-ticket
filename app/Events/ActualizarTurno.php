@@ -18,9 +18,9 @@ class ActualizarTurno implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct($turnos)
+    public function __construct(array $turnos)
     {
-        $this->$turnos = $turnos;
+        $this->turnos = $turnos;
     }
 
     /**

@@ -10,22 +10,27 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UpdateClient
+class ActualizarViajes
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $clientId;
-    public $updateData;
+    public $cajaId;
+    public $viajes;
 
     
-    public function __construct($clientId, $updateData)
+    public function __construct(int $cajaId, array $viajes)
     {
-        $this->clientId = $clientId;
+        $this->cajaId = $cajaId;
         $this->updateData = $updateData;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('client.'.$this->clientId);
+        return new PrivateChannel('client.'.$this->cajaId);
+    }
+
+    public function broadcastAs()
+    {
+        return 'actualizar.viajes';
     }
 }
