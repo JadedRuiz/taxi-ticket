@@ -6,7 +6,7 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item">Admin</li>
-                    <li class="breadcrumb-item active">Inicio</li>
+                    <li class="breadcrumb-item active" id="prueba">Inicio</li>
                 </ol>
             </div>
         </div>
@@ -75,7 +75,7 @@
                                             @endif
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="viajes">
                                         @foreach($reservaciones as $reservacion)
                                             <tr>
                                                 <td>{{ $reservacion->folio }}</td>
@@ -169,6 +169,7 @@
                 'obtenerTurnosAsync' : '{{ route('admin.api.obtenerTurnosAsync') }}',
                 'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}'
             }
+            window.user = @json($user);
         </script>
     </x-slot> 
 </x-layout>  

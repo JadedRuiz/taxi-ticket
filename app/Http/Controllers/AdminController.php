@@ -13,6 +13,8 @@ use App\Models\DetViajeModel as DetViaje;
 use App\Http\Controllers\VehiculosController as Vehiculos;
 use App\Models\OperadorModel as Operador;
 use Illuminate\Support\Facades\Mail;
+use App\Events\UpdateClient;
+use App\Events\ActualizarTurno;
 
 class AdminController extends Controller
 {
@@ -51,7 +53,7 @@ class AdminController extends Controller
     public function login(Request $body) {
         try {
             $user = DB::table("tbl_usuarios as tblU")
-            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook","perfil_id")
+            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook","perfil_id","caja_id")
             ->leftJoin("tbl_empresas as tblE","tblE.id_empresa","=","tblU.empresa_id")
             ->where("usuario",$body["usuario"])
             ->where("tblU.activo",1)
@@ -77,7 +79,8 @@ class AdminController extends Controller
                         "empresa" => $user->empresa,
                         "logo_path" => $user->logo_path,
                         "menu" => $menu,
-                        "permisos" => $permisos
+                        "permisos" => $permisos,
+                        "caja_id" => $user->caja_id
                     ];
                     Session::put("data-user",$this->encode_json(json_encode($user_data)));
                     return ["ok" => true, "data" => "Logueo Exitoso"];
@@ -145,9 +148,12 @@ class AdminController extends Controller
         return $this->encode_json($body["password"]);
     }
 
+    public function pruebaSocket() {
+        event(new UpdateClient("1", "Hola mundo"));
+        return ["ok" => true, "data" => "funciono?"];
+    }
     //WEBHOOK's
     public function webHookMyRide($id_empresa, Request $body) {
-
         try{
             //Validación
             $validar = Viaje::where("folio",$body["post"]["ID"])->first();
@@ -163,7 +169,7 @@ class AdminController extends Controller
                 "status" => $body["booking_status_name"], //Pendiente
                 "tipo_servicio" => $body["service_type_name"],
                 "tipo_viaje" => $body["transfer_type_name"],
-                "date_creacion" => $body["meta"]["pickup_datetime"],
+                "date_creacion" => $body["post"]["post_date"],
                 "comentarios" => $body["comment"]
             ]);
             //Insertamos las direcciones
@@ -243,6 +249,11 @@ class AdminController extends Controller
                 });
             }
 
+            //Actualizar viajes en tiempo real
+            broadcast(new UpdateClient($id_usuario, [
+                "viaje" => $viaje,
+                "det_viaje" => $det_viaje
+            ]));
             DB::commit();
 
             return ['ok' => true, "data" => "Registro Exitoso"];
@@ -298,6 +309,11 @@ class AdminController extends Controller
                 "dtCreacion" => date("Y-m-d h:i:s"),
                 "activo" => 1
             ]);
+
+            //Lanzamos el evento para actualizar todos los clientes
+            $turnosActualizados = $this->obtenerTurnos($user);
+            broadcast(new ActualizarTurno($turnosActualizados));
+
             return [ "ok" => true, "data" => "Turno agregado con exito"];
         } catch(\PdoException | \Error | \Exception $e) {
             Log::error("ERROR En método [asignarVehiculoOperador]: ".$e->getMessage());
