@@ -11,8 +11,8 @@ use Log;
 class VehiculosController extends Controller
 {
     public function index() {
-        if(session()->has('data-user')) {
-            $user = json_decode($this->decode_json(session('data-user')));
+        if(session('user')) {
+            $user = json_decode($this->decode_json(session('user')[0]));
             $entries = ["public/js/vehiculo.js", "public/js/operador.js", "public/sass/vehiculo.scss","public/sass/operador.scss"];
             $vehiculos = $this->obtenerVehiculos();
 

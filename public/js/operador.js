@@ -144,7 +144,7 @@ $(document).on("click",".checkSelectOpe",function() {
         id_vehiculo: id_vehiculo
     }, (res) => {
         if(res.ok) {
-            console.log(res);
+            $(".no_ope"+id_vehiculo).text("1");
             return;
         }
         Swal.fire({
@@ -160,6 +160,25 @@ $(document).on("click",".checkSelectOpe",function() {
             }
         });
     });
+});
+
+//Nuevo turno
+$(document).on("click", ".btnReload", function() {
+    $.get(window.routes.nuevoTurnoOperadores, (res) => {
+        if(res.ok) {
+            Swal.fire({
+                title: "Buen trabajo!",
+                text: res.data,
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    location.reload();
+                }
+            });
+        }
+    })
 });
 
 //Habilitar la edicion del operador

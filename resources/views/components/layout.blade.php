@@ -18,14 +18,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.bootstrap5.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.bootstrap5.css">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
-
-        var pusher = new Pusher('41c544fd825ce344452a', {
-            cluster: 'us3'
-        });
-    </script>
 </head>
 <body>
     <header id="page-topbar">
@@ -71,7 +63,7 @@
                         @endforeach
                     </ul>
                     <span class="navbar-text">
-                        <strong>{{ date('d-m-Y h:i:s') }}</strong> 
+                        <strong class="reloj">{{ date('d-m-Y h:i:s') }}</strong> 
                     </span>
                 </div>
             </nav>

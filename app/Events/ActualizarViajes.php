@@ -10,27 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ActualizarViajes
+class ActualizarViajes implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $cajaId;
     public $viajes;
 
     
-    public function __construct(int $cajaId, array $viajes)
+    public function __construct(array $viajes)
     {
-        $this->cajaId = $cajaId;
-        $this->updateData = $updateData;
+        $this->viajes = $viajes;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('client.'.$this->cajaId);
-    }
-
-    public function broadcastAs()
-    {
-        return 'actualizar.viajes';
+        return new Channel('table-event');
     }
 }

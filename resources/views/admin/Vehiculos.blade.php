@@ -16,9 +16,14 @@
                         <h4 class="card-title">Administrador de vehiculos</h4>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <p class="card-title-desc">En este módulo podrás agregar o modificar un vehiculo y sus operadores.</p>
-                            <button class="btn btn-sm btn-success btnAdd" style="padding-bottom: 0px;">
-                                <span class="mdi--truck-plus"></span>
-                            </button>
+                            <div class="buttons">
+                              <button class="btn btn-sm btn-success btnAdd" style="padding-bottom: 0px;">
+                                  <span class="mdi--truck-plus"></span>
+                              </button>&nbsp;
+                              <button class="btn btn-sm btn-info text-white btnReload" style="padding-bottom: 0px;">
+                                  <span class="mdi--reload"></span>
+                              </button>
+                            </div>                            
                         </div>
                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
@@ -50,7 +55,7 @@
                                                 <td>{{ $vehiculo->vehiculo }}</td>
                                                 <td>{{ $vehiculo->marca }} ({{ $vehiculo->modelo }})</td>
                                                 <td class="text-center">
-                                                  {{ $vehiculo->no_operadores }} &nbsp;&nbsp;
+                                                  <span class="no_ope{{ $vehiculo->id_vehiculo }}">{{ $vehiculo->no_operadores }}</span> &nbsp;&nbsp;
                                                   <button class="btn btn-sm btn-success text-white" style="padding-bottom: 0px;" id="btnOperador" data-attr="{{ $vehiculo->id_vehiculo }}">
                                                     <span class="ic--baseline-group-add"></span>
                                                   </button>
@@ -89,7 +94,9 @@
                 'guardarOperador' : '{{ route('admin.api.guardarOperador') }}',
                 'getVehiculoOperadores' : '{{ route('admin.api.getVehiculoOperadores') }}',
                 'asignarOperadorVehiculo' : '{{ route('admin.api.asignarOperadorVehiculo') }}',
-                'getOperadorId' : '{{ route('admin.api.getOperadorId') }}'
+                'getOperadorId' : '{{ route('admin.api.getOperadorId') }}',
+                'nuevoTurnoOperadores' : '{{ route('admin.api.nuevoTurnoOperadores') }}'
+                
             }
         </script>
     </x-slot> 

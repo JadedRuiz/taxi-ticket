@@ -8,14 +8,14 @@ class TicketExport {
 
     public static function generarTicket($viaje, $det_viaje, $destino, $origen, $empresa, $data_vehiculo_operador = null) {
         if($data_vehiculo_operador != null) {
-            $pdf = new Fpdf('P','mm', array(80,150));
+            $pdf = new Fpdf('P','mm', array(80,160));
         }else {
             $pdf = new Fpdf('P','mm', array(80,140)); 
         }
         $pdf->AddPage();
         //Imagen
         $img_logo = str_replace('/img','',$empresa->logo_path);
-        $pdf->Image(public_path('img').$img_logo,5,5,40,15,'PNG','');
+        $pdf->Image(public_path('img').$img_logo,5,5,50,15,'PNG','');
         //Importamos los fonts
         $pdf->AddFont('Raleway-Bold','','Raleway-Bold.php', public_path('fonts'));
         $pdf->AddFont('Raleway-Regular','','Raleway-Regular.php', public_path('fonts'));
@@ -152,6 +152,12 @@ class TicketExport {
             $pdf->setXY(5,117);
             $pdf->Cell(30,4,"Pago",0,0,"L");
             $pdf->Cell(40,4,$det_viaje->tipo_pago,0,0,"L");
+        #endregion
+        #region [Leyenda final]
+            $pdf->SetFont('Raleway-Bold', '', 6);
+            $pdf->SetFillColor(255, 255, 55);
+            $pdf->setXY(5,125);
+            $pdf->MultiCell(70,4,utf8_decode("En caso de requerir factura enviar un correo a facturación.myride@gmail.com adjuntando sus datos fiscales y su ticket de venta"),0,"L"); 
         #endregion
         return base64_encode($pdf->Output('S','ticket.pdf'));
     }

@@ -86,7 +86,7 @@ class OperadorController extends Controller
             "activo" => 1
         ];
         $curp_validate = $request->id_operador != null ? '' : 'unique:tbl_operadores|';
-        $user = json_decode($this->decode_json(session('data-user')));
+        $user = json_decode($this->decode_json(session('user')[0]));
         #region [Validaciones]
             $request->validate([
                 'nombres' => 'required|max:150',
@@ -297,4 +297,21 @@ class OperadorController extends Controller
             return ["ok" => false, "message" => "No se pudo asinar el operador al vehiculo"];
         }
     }
+
+    public function nuevoTurnoOperadores() {
+        try {
+            $user = json_decode($this->decode_json(session('user')[0]));
+            DB::table("rel_vehiculo_operador")
+            ->where("activo",1)
+            ->update([
+                "activo" => 0
+            ]);
+            
+            return ["ok" => true, "data" => "Nuevo turno de operadores iniciado"];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [nuevoTurnoOperadores]: ".$e->getMessage());
+            return ["ok" => false, "message" => "No se podido iniciar un nuevo turno"];
+        }
+
+    } 
 }

@@ -6,21 +6,28 @@ use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\VehiculosController;
 use App\Http\Controllers\OperadorController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\Controller;
 
 #region [Vistas]
     //Página Principal
-    Route::get('/', [ViajeController::class, 'index'])->name('reserva.index');
+    // Route::get('/', [ViajeController::class, 'index'])->name('reserva.index');
     //Página Login
-    Route::get('login', [AdminController::class, 'index']);
+    Route::get('/', [UsuarioController::class, 'index'])->name('index');
+
+    
 #endregion
 
 #region [Consumo Auth]
     Route::group(['as' => 'auth.','prefix' => 'auth'], function () {
+        //Inicio Caja
+        Route::post('inicioOperacion',[UsuarioController::class, 'inicioOperacion'])->name("inicioOperacion");
+        //Cierre Caja
+        Route::post('cierreOperacion',[UsuarioController::class, 'cierreOperacion'])->name("cierreOperacion");
         //Loguearse
-        Route::post('entrar', [AdminController::class, 'login'])->name("login");
+        Route::post('login', [UsuarioController::class, 'login'])->name("login");
         //Desloguearse
-        Route::get('logout', [AdminController::class, 'logout'])->name("logout");
+        Route::get('logout', [UsuarioController::class, 'logout'])->name("logout");
     });
 #endregion
 
@@ -41,8 +48,12 @@ use App\Http\Controllers\Controller;
                 //CRUD Home
                 Route::post('generarTicket', [AdminController::class, 'generarTicket'])->name("generar");
                 Route::post('asignarOperadorAViaje', [AdminController::class, 'asignarOperadorAViaje'])->name("asignarOperadorAViaje");  
-                Route::post('agregarNuevoTurno', [AdminController::class, 'agregarNuevoTurno'])->name('agregarNuevoTurno');   
-                Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync');           
+                Route::post('asignarOperadorAViajeAdmin', [AdminController::class, 'asignarOperadorAViajeAdmin'])->name("asignarOperadorAViajeAdmin");  
+                Route::post('cancelarViaje', [AdminController::class, 'cancelarViaje'])->name("cancelarViaje");  
+                Route::post('agregarNuevoTurno', [AdminController::class, 'agregarNuevoTurno'])->name('agregarNuevoTurno');
+                Route::post('eliminarTurno', [AdminController::class, 'eliminarTurno'])->name('eliminarTurno');   
+                Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync'); 
+                Route::post('obtenerReservasCaja', [AdminController::class, 'obtenerReservasCaja'])->name('obtenerReservasCaja');         
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');
@@ -54,6 +65,7 @@ use App\Http\Controllers\Controller;
                 Route::post('obtenerVehiculoOperadores', [OperadorController::class, 'obtenerVehiculoOperadores'])->name('getVehiculoOperadores');
                 Route::post('asignarOperadorVehiculo', [OperadorController::class, 'asignarOperadorVehiculo'])->name('asignarOperadorVehiculo');
                 Route::post('obtenerOperadorPorId', [OperadorController::class, 'obtenerOperadorPorId'])->name('getOperadorId');
+                Route::get('nuevoTurnoOperadores', [OperadorController::class, 'nuevoTurnoOperadores'])->name('nuevoTurnoOperadores');
 
             });
         #endregion 

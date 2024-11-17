@@ -14,8 +14,26 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Reservaciones</h4>
-                        <p class="card-title-desc my-0">Esta tabla muestra la información de ultimas 100 reservaciones realizadas.</p>
+                        <div class="title-cardbody d-flex justify-content-between">
+                            <h4 class="card-title">Reservaciones</h4>
+                            @if($turno_caja != null) 
+                                <div class="buttons-operations">
+                                    @if($turno_caja["ok"]) 
+                                        <button class="btn btn-sm btn-danger btn-style" id="cierreOperacion">
+                                            <span class="mdi--close-box"></span> &nbsp;
+                                            Cierre de caja
+                                        </button>
+                                    @else
+                                        <button class="btn btn-sm btn-success btn-style" id="iniciarOperacion">
+                                            <span class="material-symbols--not-started"></span> &nbsp;
+                                            Inicio de operaciones
+                                        </button>
+                                    @endif
+                                </div>                                
+                            @endif
+                           
+                        </div>                        
+                        <p class="card-title-desc my-0">Esta tabla se muesta los viajes que se han realizado en taquilla</p>
                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                         <div class="row mt-3">
                             @if(isset($turnos)) 
@@ -36,13 +54,29 @@
                                         @if($turnos["ok"] && count($turnos["data"]) > 0)
                                             <div class="lstTurnos">
                                                 @foreach($turnos["data"] as $index => $turno)
-                                                    <li class="list-group-item row px-0 mx-0 d-flex">
-                                                        <div class="col-3 px-0 border-orden">{{ $index+1 }}</div>
-                                                        <div class="col-9 d-flex flex-column">
-                                                            <p class="py-0 my-0 lstTitulo">{{ substr($turno->nombres." ".$turno->apellidos,0,25)."..."  }}</p>
-                                                            <small class="lstTurnoSmall text-danger">{{ $turno->vehiculo."- $turno->marca ($turno->modelo)" }}</small>
-                                                        </div>
-                                                    </li>
+                                                    @if(in_array($user->permisos->perfil, ["Administrador"]))
+                                                        <li class="list-group-item row px-0 mx-0 d-flex">
+                                                            <div class="col-2 px-0 border-orden">{{ $index+1 }}</div>
+                                                            <div class="col-10 d-flex justify-content-between">
+                                                                <div class="d-flex flex-column">
+                                                                    <p class="py-0 my-0 lstTitulo">{{ substr($turno->nombres." ".$turno->apellidos,0,25)."..."  }}</p>
+                                                                    <small class="lstTurnoSmall text-danger">{{ $turno->vehiculo."- $turno->marca ($turno->modelo)" }}</small>
+                                                                </div>
+                                                                <button class="btn btn-sm btn-danger text-white btnEliminarTurno" data-attr="{{ $turno->id_turno }}"  title="Asignar Operador">
+                                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                                </button>
+                                                            </div>
+                                                        </li>
+                                                    @else
+                                                        <li class="list-group-item row px-0 mx-0 d-flex">
+                                                            <div class="col-3 px-0 border-orden">{{ $index+1 }}</div>
+                                                            <div class="col-9 d-flex flex-column">
+                                                                <p class="py-0 my-0 lstTitulo">{{ substr($turno->nombres." ".$turno->apellidos,0,25)."..."  }}</p>
+                                                                <small class="lstTurnoSmall text-danger">{{ $turno->vehiculo."- $turno->marca ($turno->modelo)" }}</small>
+                                                            </div>
+                                                        </li>
+                                                    @endif
+                                                    
                                                 @endforeach
                                             </div>                                      
                                         @else
@@ -54,7 +88,7 @@
                                     </ul>
                                 </div>
                             @endif
-                            <div class="{{ isset($turnos) ? 'col-9' : 'col-12' }}">
+                            <div class="{{ isset($turnos) ? 'col-9' : 'col-12' }} insertartabla">
                                 <table id="datatable" class="table table-striped dataTable display" style="width: 100%;">
                                     <thead>
                                         <tr role="row">
@@ -63,9 +97,7 @@
                                                 <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 300px;">Contacto</th>
                                             @endif
                                             <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 320px;" >Itinerario</th>
-                                            @if(count($reservaciones) > 0 && isset($reservaciones[0]->status))
-                                                <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Status/Operador</th>
-                                            @endif
+                                            <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Status/Operador</th>
                                             @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
                                                 <th class="sorting_asc text-center" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" style="width: 98px;">Precio</th>
                                             @endif
@@ -75,7 +107,7 @@
                                             @endif
                                         </tr>
                                     </thead>
-                                    <tbody id="viajes">
+                                    <tbody>
                                         @foreach($reservaciones as $reservacion)
                                             <tr>
                                                 <td>{{ $reservacion->folio }}</td>
@@ -107,13 +139,13 @@
                                                     <td class="text-center cp" title="{{ $reservacion->tipo_pago }}">{{ "$". number_format($reservacion->precio,2) }}</td>
                                                 @endif
                                                 <td>{{ date('d-m-Y H:i',strtotime($reservacion->date_creacion)) }}</td>
-                                                @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
+                                                @if(in_array($user->permisos->perfil, ["Cajera"]))
                                                     <td>
                                                         @if(isset($reservacion->status))
                                                             @if($reservacion->status == "Pending")
-                                                                <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
+                                                                {{-- <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
                                                                     <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                                                                </button>
+                                                                </button> --}}
                                                                 <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
                                                                     <i class="fa fa-check-square" aria-hidden="true"></i>
                                                                 </button>
@@ -127,6 +159,20 @@
                                                                 <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
                                                             </button>
                                                         @endif
+                                                    </td>
+                                                @endif
+                                                @if(in_array($user->permisos->perfil, ["Administrador"]))
+                                                    <td>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-sm btn-info text-white" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fa fa-bars" aria-hidden="true"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                                                            <li><a class="dropdown-item cp btnAsignarOperadorAdmin"data-attr="{{ $reservacion->id_viaje }}">Asignar viaje</a></li>
+                                                            <li><a class="dropdown-item cp btnTicket {{$reservacion->status == "Pending" ? 'disabled' : ''}}" data-attr="{{ $reservacion->id_viaje }}">Generar ticket</a></li>
+                                                            <li><a class="dropdown-item cp btnCancelar" data-attr="{{ $reservacion->id_viaje }}">Cancelar Viaje</a></li>
+                                                            </ul>
+                                                        </div>
                                                     </td>
                                                 @endif
                                             </tr>                                            
@@ -159,15 +205,30 @@
     @if(isset($vehiculos)) 
         @include('components.modales.modal_asignar_vehiculo', $vehiculos)
     @endif
-    
+
+    {{-- Modal Cierre Venta --}}
+    @if($turno_caja != null) 
+        @include('components.modales.modal_cierre_operacion')
+    @endif
+
+    {{-- Modal Asignacion Libre --}}
+    @if(in_array($user->permisos->perfil, ["Administrador"])) 
+        @include('components.modales.modal_asignar_admin')
+    @endif
 
     <x-slot name="scripts">
         <script>
             window.routes = {
                 'generarTicket' : '{{ route('admin.api.generar') }}',
                 'agregarNuevoTurno' : '{{ route('admin.api.agregarNuevoTurno') }}',
+                'eliminarTurno' : '{{ route('admin.api.eliminarTurno') }}',
                 'obtenerTurnosAsync' : '{{ route('admin.api.obtenerTurnosAsync') }}',
-                'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}'
+                'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}',
+                'asignarOperadorAViajeAdmin' : '{{ route('admin.api.asignarOperadorAViajeAdmin') }}',
+                'inicioOperacion' : '{{ route('auth.inicioOperacion') }}',
+                'cierreOperacion' : '{{ route('auth.cierreOperacion') }}',
+                'cancelarViaje' : '{{ route('admin.api.cancelarViaje') }}',
+                'obtenerReservasCaja' : '{{ route('admin.api.obtenerReservasCaja') }}'
             }
             window.user = @json($user);
         </script>

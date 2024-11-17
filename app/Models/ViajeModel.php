@@ -14,6 +14,7 @@ class ViajeModel extends Model
 
     protected $fillable= [
         'empresa_id',
+        'caja_id',
         'folio',
         'nombre_viaje',
         'status', 

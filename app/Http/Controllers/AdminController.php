@@ -13,84 +13,86 @@ use App\Models\DetViajeModel as DetViaje;
 use App\Http\Controllers\VehiculosController as Vehiculos;
 use App\Models\OperadorModel as Operador;
 use Illuminate\Support\Facades\Mail;
-use App\Events\UpdateClient;
 use App\Events\ActualizarTurno;
+use App\Events\ActualizarViajes;
 
 class AdminController extends Controller
 {
     //
     function index() {
-        if(session()->has('data-user')) {
-            $user = json_decode($this->decode_json(session('data-user')));
+        if(session('user')) {
+            $user = json_decode($this->decode_json(session('user')[0]));            
             $entries = ['public/js/admin.js','public/sass/admin.scss'];
-            $columnas = null;
-            if(in_array($user->permisos->perfil, ["Cajera","Administrador"])) {
-                $columnas = ["id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago"];
+            $turno_caja = $this->obtenerTurnoCaja($user->caja_id);
+            $reservaciones = [];
+            if(in_array($user->permisos->perfil, ["Cajera"]) && $turno_caja["ok"]) {
+                $reservaciones_totales = DB::table("tbl_viajes as tblV")
+                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago","tTC.dt_inicio_operacion")
+                ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+                ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+                ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+                ->where("tblV.empresa_id",$user->id_empresa)
+                ->where("tblV.status",'<>',"Cerrado")
+                ->where("tblV.caja_id",$user->caja_id)
+                ->where("tTC.b_status","1")
+                ->orderBy("tblV.date_creacion",'DESC')
+                // ->orderBy("tblV.folio",'DESC')
+                ->get();
+                $reservaciones = [];
+                foreach($reservaciones_totales as $reservacion) {
+                    if($reservacion->date_creacion >=  $reservacion->dt_inicio_operacion) {
+                        array_push($reservaciones,$reservacion);
+                    }
+                }
+            }
+            if(in_array($user->permisos->perfil, ["Administrador"])) {
+                $reservaciones_totales = DB::table("tbl_viajes as tblV")
+                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago","tTC.dt_inicio_operacion")
+                ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+                ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+                ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+                ->where("tblV.empresa_id",$user->id_empresa)
+                ->where("tblV.status",'<>',"Cerrado")
+                ->where("tTC.b_status","1")
+                ->orderBy("tblV.date_creacion",'DESC')
+                // ->orderBy("tblV.folio",'DESC')
+                ->get();
+                $reservaciones = [];
+                foreach($reservaciones_totales as $reservacion) {
+                    if($reservacion->date_creacion >=  $reservacion->dt_inicio_operacion) {
+                        array_push($reservaciones,$reservacion);
+                    }
+                }
             }
             if(in_array($user->permisos->perfil, ["Operador"])) {
-                $columnas = ["id_viaje","folio","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblV.status", "tblO.nombres","tblO.apellidos"];
+                $reservaciones = DB::table("tbl_viajes as tblV")
+                ->select("id_viaje","folio","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblV.status", "tblO.nombres","tblO.apellidos")
+                ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+                ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+                ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+                ->where("tblV.empresa_id",$user->id_empresa)
+                ->where("tblV.status",'<>',"Cerrado")
+                ->orderBy("tblV.date_creacion",'DESC')
+                // ->orderBy("tblV.folio",'DESC')
+                ->get();
             }
-            $reservaciones = DB::table("tbl_viajes as tblV")
-            ->select($columnas)
-            ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
-            ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
-            ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
-            ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
-            ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
-            ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
-            ->where("tblV.empresa_id",$user->id_empresa)
-            ->where("tblV.date_creacion",'>',date('Y-m-d')." 06:00:00")
-            ->orderBy("tblV.date_creacion",'DESC')
-            ->orderBy("tblV.status","DESC")
-            ->get();
+            
             $vehiculos = $this->obtenerVehiculosOperadores();
             $turnos = $this->obtenerTurnos($user);
-            return view('admin/Home', compact('user','reservaciones','entries','vehiculos','turnos'));
+            return view('admin.Home', compact('user','reservaciones','entries','vehiculos','turnos', 'turno_caja'));
         }
-        return view('admin/template/Login');
-    }
-
-    public function login(Request $body) {
-        try {
-            $user = DB::table("tbl_usuarios as tblU")
-            ->select("id_usuario","usuario","nombre","password","tblE.id_empresa","tblE.empresa","tblE.logo_path","tblE.webhook","perfil_id","caja_id")
-            ->leftJoin("tbl_empresas as tblE","tblE.id_empresa","=","tblU.empresa_id")
-            ->where("usuario",$body["usuario"])
-            ->where("tblU.activo",1)
-            ->first();
-
-            if($user) {
-                if($this->decode_json($user->password) == $body["pass"]) {
-                    $menu = DB::table("rel_menu_usuario as rMU")
-                    ->select("tblM.titulo", "tblM.icono", "tblM.ruta",)
-                    ->join("tbl_menu as tblM","tblM.id_menu","=","rMU.menu_id")
-                    ->where("tblM.activo",1)
-                    ->where("rMU.usuario_id",$user->id_usuario)
-                    ->get();
-                    $permisos = DB::table("tbl_perfiles")
-                    ->where('id_perfil',$user->perfil_id)
-                    ->first();
-                    $user_data = [
-                        "id_usuario" => $user->id_usuario,
-                        "usuario" => $user->usuario,
-                        "nombre" => $user->nombre,
-                        "id_empresa" => $user->id_empresa,
-                        "webhook" => $user->webhook,
-                        "empresa" => $user->empresa,
-                        "logo_path" => $user->logo_path,
-                        "menu" => $menu,
-                        "permisos" => $permisos,
-                        "caja_id" => $user->caja_id
-                    ];
-                    Session::put("data-user",$this->encode_json(json_encode($user_data)));
-                    return ["ok" => true, "data" => "Logueo Exitoso"];
-                }
-                return ["ok" => false, "message" => "E-AD-001 : Contraseña invalida"];
-            }
-            return ["ok" => false, "message" => "E-AD-001 : Usuario no encontrado"];
-        } catch(\Exception | \PDOException $e) {
-            return ["ok" => false, "message" => "E-AD-GEN : ".$e->getMessage()];
-        }
+        return redirect()->action([UsuarioController::class, 'index']);
     }
 
     public function generarTicket(Request $res) {
@@ -139,19 +141,25 @@ class AdminController extends Controller
         }
     }
 
-    public function logout() {
-        session()->forget("data-user");
-        return redirect()->route('admin.home');
-    }
-
     public function encriptar(Request $body) {
         return $this->encode_json($body["password"]);
     }
 
-    public function pruebaSocket() {
-        event(new UpdateClient("1", "Hola mundo"));
-        return ["ok" => true, "data" => "funciono?"];
+    public function obtenerTurnoCaja($caja_id) {
+        if($caja_id != null) {
+            $turno_caja = DB::table('tbl_turnos_caja')
+            ->select('dt_inicio_operacion')
+            ->where('b_status',1)
+            ->where('caja_id',$caja_id)
+            ->first();
+            if($turno_caja) {
+                return ["ok" => true, "data" => $turno_caja];
+            }
+            return ["ok" => false, "message" => "Aun no se ha iniciado operaciones"];
+        }
+        return null;
     }
+    
     //WEBHOOK's
     public function webHookMyRide($id_empresa, Request $body) {
         try{
@@ -161,15 +169,22 @@ class AdminController extends Controller
                 return ["ok" => false, "data" => "Este folio ya ha sido registrado"];
             }
             DB::beginTransaction();
+            $caja_id=0;
+            if(isset($body["meta"]["form_element_field"]) && is_array($body["meta"]["form_element_field"]) && count($body["meta"]["form_element_field"]) > 0) {
+                if(isset($body["meta"]["form_element_field"][0]["label"]) && isset($body["meta"]["form_element_field"][0]["value"])) {
+                    $caja_id = $body["meta"]["form_element_field"][0]["value"];
+                }
+            }
             //Insertamos el viaje
             $viaje = Viaje::create([
                 "empresa_id" => $id_empresa,
+                "caja_id" => $caja_id,
                 "folio" => $body["post"]["ID"],
                 "nombre_viaje" => $body["post"]["post_title"],
                 "status" => $body["booking_status_name"], //Pendiente
                 "tipo_servicio" => $body["service_type_name"],
                 "tipo_viaje" => $body["transfer_type_name"],
-                "date_creacion" => $body["post"]["post_date"],
+                "date_creacion" => $body["meta"]["pickup_datetime"],
                 "comentarios" => $body["comment"]
             ]);
             //Insertamos las direcciones
@@ -202,6 +217,10 @@ class AdminController extends Controller
                     'precio' => $body["meta"]["price_fixed_value"],
                     'tipo' => "destino"
                 ]);
+            }else{
+                $destino->update([
+                    "precio" => $body["meta"]["price_fixed_value"]
+                ]);
             }
             //Validamos si existe facturacio
             $id_factura=0;
@@ -219,12 +238,7 @@ class AdminController extends Controller
                 $id_factura = DB::table("tbl_facturas")
                 ->insertGetId($data_facturacion);
             }
-            $id_usuario=0;
-            if(isset($body["meta"]["form_element_field"]) && is_array($body["meta"]["form_element_field"]) && count($body["meta"]["form_element_field"]) > 0) {
-                if(isset($body["meta"]["form_element_field"][0]["text"]) && isset($body["meta"]["form_element_field"][0]["value"])) {
-                    $id_usuario = $body["meta"]["form_element_field"][0]["value"];
-                }
-            }
+            //Buscamos quien realizo la venta
             //Insertamos detalle viaje
             $det_viaje= DetViaje::create([
                 "viaje_id" => $viaje->id_viaje,
@@ -237,8 +251,7 @@ class AdminController extends Controller
                 "nombre" => strtoupper($this->Utf8_ansi($body["meta"]["client_contact_detail_first_name"]) ." ". $this->Utf8_ansi($body["meta"]["client_contact_detail_last_name"])),
                 "correo" => $this->Utf8_ansi($body["meta"]["client_contact_detail_email_address"]),
                 "telefono" => $this->Utf8_ansi($body["meta"]["client_contact_detail_phone_number"]),
-                "tipo_pago" => $body["meta"]["payment_name"],
-                "usuario_id" => $id_usuario
+                "tipo_pago" => $body["meta"]["payment_name"]
             ]);
 
             //Enviamos correo para avisar al admin que se realizo un viaje con factura
@@ -248,13 +261,17 @@ class AdminController extends Controller
                     $message->to(getenv('MAIL_ADMIN'),'Administrador MyRide');
                 });
             }
-
-            //Actualizar viajes en tiempo real
-            broadcast(new UpdateClient($id_usuario, [
-                "viaje" => $viaje,
-                "det_viaje" => $det_viaje
+            //Actualizamos las cajas
+            broadcast(new ActualizarViajes([
+                "caja_id" => $caja_id
+            ]));
+            //Actualizamos admin
+            broadcast(new ActualizarViajes([
+                "caja_id" => -1
             ]));
             DB::commit();
+            //Actualizar viajes en tiempo real
+            
 
             return ['ok' => true, "data" => "Registro Exitoso"];
 
@@ -290,7 +307,7 @@ class AdminController extends Controller
 
     public function agregarNuevoTurno(Request $request) {
         try {
-            $user = json_decode($this->decode_json(session('data-user')));
+            $user = json_decode($this->decode_json(session('user')[0]));
             $validar = DB::table("tbl_turnos")
             ->where("empresa_id",$user->id_empresa)
             ->where("vehiculo_operador_id",$request->id_vehiculo_operador)
@@ -316,7 +333,35 @@ class AdminController extends Controller
 
             return [ "ok" => true, "data" => "Turno agregado con exito"];
         } catch(\PdoException | \Error | \Exception $e) {
-            Log::error("ERROR En método [asignarVehiculoOperador]: ".$e->getMessage());
+            Log::error("ERROR En método [agregarNuevoTurno]: ".$e->getMessage());
+            return ["ok" => false, "message" => "No se han encontrado operadores"];
+        }
+    }
+
+    public function eliminarTurno(Request $request) {
+        try {
+            $user = json_decode($this->decode_json(session('user')[0]));
+            $validar = DB::table("tbl_turnos")
+            ->where("empresa_id",$user->id_empresa)
+            ->where("id_turno",$request->id_turno)
+            ->where("dtCreacion",">=",date('Y-m-d'))
+            ->where("activo",1)
+            ->first();
+            if(!$validar) {
+                return [ "ok" => false, "message" => "Este turno no existe en la lista de turnos"];
+            }
+            DB::table("tbl_turnos")
+            ->where("id_turno", $request->id_turno)
+            ->update([
+                "activo" => 0
+            ]);
+            //Lanzamos el evento para actualizar todos los clientes
+            $turnosActualizados = $this->obtenerTurnos($user);
+            broadcast(new ActualizarTurno($turnosActualizados));
+
+            return [ "ok" => true, "data" => "Turno eliminado con exito"];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [eliminarTurno]: ".$e->getMessage());
             return ["ok" => false, "message" => "No se han encontrado operadores"];
         }
     }
@@ -324,14 +369,14 @@ class AdminController extends Controller
     public function obtenerTurnos($user) {
         try {
             $turnos = DB::table("tbl_turnos as tblT")
-            ->select("tblV.vehiculo","tblV.marca","tblV.modelo","tblO.nombres","tblO.apellidos")
+            ->select("tblT.id_turno","rlVO.id_vehiculo_operador","tblV.vehiculo","tblV.marca","tblV.modelo","tblO.nombres","tblO.apellidos")
             ->join("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","tblT.vehiculo_operador_id")
             ->join("tbl_vehiculos as tblV","tblV.id_vehiculo","=","rlVO.vehiculo_id")
             ->join("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
             ->where("empresa_id",$user->id_empresa)
             ->where("tblT.dtCreacion",">=",date('Y-m-d'))
             ->where("tblT.activo",1)
-            ->orderBy('tblT.dtCreacion','asc')
+            ->orderBy('tblT.id_turno','desc')
             ->get();
             return ["ok" => true, "data" => $turnos];
         } catch(\PdoException | \Error | \Exception $e) {
@@ -341,13 +386,13 @@ class AdminController extends Controller
     }
 
     public function obtenerTurnosAsync() {
-        $user = json_decode($this->decode_json(session('data-user')));
+        $user = json_decode($this->decode_json(session('user')[0]));
         return $this->obtenerTurnos($user);
     }
 
     public function asignarOperadorAViaje(Request $request) {
         try {
-            $user = json_decode($this->decode_json(session('data-user')));
+            $user = json_decode($this->decode_json(session('user')[0]));
             $siguiente_turno = DB::table("tbl_turnos")
             ->where("empresa_id",$user->id_empresa)
             ->where("dtCreacion",">=",date('Y-m-d'))
@@ -355,12 +400,25 @@ class AdminController extends Controller
             ->orderBy("dtCreacion", "asc")
             ->first();
             if($siguiente_turno) {
-                DB::table("rel_viaje_vehiculo_operador")->insert([
-                    "viaje_id" => $request->id_viaje,
-                    "vehiculo_operador_id" => $siguiente_turno->vehiculo_operador_id,
-                    "dtCreacion" => date("Y-m-d h:i:s"),
-                    "activo" => 1
-                ]);
+                //Validamos si el viaje ya cuenta con operador
+                $validar_viaje = DB::table("rel_viaje_vehiculo_operador")
+                ->where('viaje_id',$request->id_viaje)
+                ->first();
+                if($validar_viaje){
+                    DB::table("rel_viaje_vehiculo_operador")
+                    ->where('viaje_id',$request->id_viaje)
+                    ->update([
+                        "vehiculo_operador_id" => $siguiente_turno->vehiculo_operador_id
+                    ]);
+                } else {
+                    DB::table("rel_viaje_vehiculo_operador")->insert([
+                        "viaje_id" => $request->id_viaje,
+                        "vehiculo_operador_id" => $siguiente_turno->vehiculo_operador_id,
+                        "dtCreacion" => date("Y-m-d h:i:s"),
+                        "activo" => 1
+                    ]);
+                }
+                
                 //Actualizamos los turnos
                 DB::table("tbl_turnos")
                 ->where("id_turno",$siguiente_turno->id_turno)
@@ -371,6 +429,15 @@ class AdminController extends Controller
                 Viaje::where("id_viaje",$request->id_viaje)->update([
                     "status" => "En servicio"
                 ]);
+                //Lanzamos el evento para actualizar todos los clientes
+                $turnosActualizados = $this->obtenerTurnos($user);
+                broadcast(new ActualizarTurno($turnosActualizados));
+
+                //Actualizamos todos los clientes
+                broadcast(new ActualizarViajes([
+                    "caja_id" => 0
+                ]));
+
                 return [ "ok" => true, "data" => "El Operador ha sido asignado al viaje"];
             }
             return [ "ok" => false, "message" => "Aun no existen turnos en la lista"];
@@ -379,6 +446,132 @@ class AdminController extends Controller
             Log::error("ERROR En método [asignarOperadorAViaje]: ".$e->getMessage());
             return ["ok" => false, "message" => "Ha ocurrido un error al asignar el viaje"];
         }
+    }
 
+    public function asignarOperadorAViajeAdmin(Request $request) {
+        try {
+            $user = json_decode($this->decode_json(session('user')[0]));
+            $siguiente_turno = DB::table("tbl_turnos")
+            ->where("empresa_id",$user->id_empresa)
+            ->where("dtCreacion",">=",date('Y-m-d'))
+            ->where("activo",1)
+            ->orderBy("dtCreacion", "asc")
+            ->first();
+            if($siguiente_turno) {
+                //Validamos si el viaje ya cuenta con operador
+                $validar_viaje = DB::table("rel_viaje_vehiculo_operador")
+                ->where('viaje_id',$request->id_viaje)
+                ->first();
+                if($validar_viaje){
+                    DB::table("rel_viaje_vehiculo_operador")
+                    ->where('viaje_id',$request->id_viaje)
+                    ->update([
+                        "vehiculo_operador_id" => $request->id_vehiculo_operador
+                    ]);
+                } else {
+                    DB::table("rel_viaje_vehiculo_operador")->insert([
+                        "viaje_id" => $request->id_viaje,
+                        "vehiculo_operador_id" => $request->id_vehiculo_operador,
+                        "dtCreacion" => date("Y-m-d h:i:s"),
+                        "activo" => 1
+                    ]);
+                }
+                $obtnemos_el_turno = DB::table("tbl_turnos")
+                ->where("empresa_id",$user->id_empresa)
+                ->where("dtCreacion",">=",date('Y-m-d'))
+                ->where("activo",1)
+                ->where("vehiculo_operador_id",$request->id_vehiculo_operador)
+                ->first();
+
+                //Actualizamos los turnos
+                DB::table("tbl_turnos")
+                ->where("id_turno",$obtnemos_el_turno->id_turno)
+                ->update([
+                    "activo" => 0
+                ]);
+                //Actualizamos el viaje
+                Viaje::where("id_viaje",$request->id_viaje)->update([
+                    "status" => "En servicio"
+                ]);
+                //Lanzamos el evento para actualizar todos los clientes
+                $turnosActualizados = $this->obtenerTurnos($user);
+                broadcast(new ActualizarTurno($turnosActualizados));
+
+                //Actualizamos todos los clientes
+                broadcast(new ActualizarViajes([
+                    "caja_id" => 0
+                ]));
+
+                return [ "ok" => true, "data" => "El Operador ha sido asignado al viaje"];
+            }
+            return [ "ok" => false, "message" => "Aun no existen turnos en la lista"];
+
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [asignarOperadorAViaje]: ".$e->getMessage());
+            return ["ok" => false, "message" => "Ha ocurrido un error al asignar el viaje"];
+        }
+    }
+
+    public function cancelarViaje(Request $res) {
+        try {
+            DB::table('tbl_viajes')->where('id_viaje', $res->id_viaje)->delete();
+            
+            return ["ok" => true, "message" => "El viaje ha sido cancelado."];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [asignarOperadorAViaje]: ".$e->getMessage());
+            return ["ok" => false, "message" => "Ha ocurrido un error al asignar el viaje"];
+        }
+    }
+
+    public function obtenerReservasCaja(Request $request) {
+        try {
+            $caja_id = $request->caja_id;
+            $reservaciones_totales = DB::table("tbl_viajes as tblV")
+            ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago","tTC.dt_inicio_operacion")
+            ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+            ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
+            ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
+            ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+            ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+            ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+            ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+            ->where("tblV.empresa_id",$request->id_empresa)
+            ->where("tblV.status",'<>',"Cerrado")
+            ->where("tblV.caja_id",$request->caja_id)
+            ->where("tTC.b_status","1")
+            ->orderBy("tblV.date_creacion",'DESC')
+            // ->orderBy("tblV.folio",'DESC')
+            ->get();
+
+            //Admin pidio actualizar su tabla
+            if($request->caja_id == null || $request->caja_id == 0 ||!isset($request->caja_id)) {
+                $reservaciones_totales = DB::table("tbl_viajes as tblV")
+                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago","tTC.dt_inicio_operacion")
+                ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+                ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
+                ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+                ->leftJoin("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+                ->where("tblV.empresa_id",$request->id_empresa)
+                ->where("tblV.status",'<>',"Cerrado")
+                ->orderBy("tblV.date_creacion",'DESC')
+                ->where("tTC.b_status","1")
+                // ->orderBy("tblV.status","DESC")
+                ->get();
+            }
+            
+            $reservaciones = [];
+            foreach($reservaciones_totales as $reservacion) {
+                if($reservacion->date_creacion >=  $reservacion->dt_inicio_operacion) {
+                    array_push($reservaciones,$reservacion);
+                }
+            }
+            return ["ok" => true, "data" => view('components.tables.table_viajes', compact('reservaciones', 'caja_id'))->render()];
+        } catch(\PdoException | \Error | \Exception $e) {
+            Log::error("ERROR En método [obtenerReservasCaja]: ".$e->getMessage());
+            return ["ok" => false, "message" => "Ha ocurrido al recuperar los viajes"];
+        }
     }
 }

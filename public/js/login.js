@@ -1,5 +1,6 @@
 import $ from 'jquery';
 
+
 $(window).on("keydown", function(event) {
     if(event.key == "Enter") {
         event.preventDefault();
@@ -30,6 +31,10 @@ $(document).on("click","#submitForm", (event) => {
                 $("#btn-loading").find(".spinner-border").addClass("d-none");
                 $("#btn-loading").find("i").removeClass("d-none");
             }, 2000);
+            // if(res.data.permisos.perfil.includes("Cajera")) {
+            //     location.href = window.routes.inicio_caja;
+            //     return;
+            // }
             location.href = window.routes.home;
             return;
         }

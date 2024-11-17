@@ -4,8 +4,476 @@ import Swal from 'sweetalert2';
 
 var id_viaje=0;
 var user=0;
+var table = null;
+var swalWithBootstrapButtons = null;
 $(window).on("load", function() {
-    new DataTable('#datatable', {
+
+    table = inicarTabla();
+    swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger mx-2"
+        },
+        buttonsStyling: false
+    });
+
+    user = window.user;
+    actualizaViajes();
+    actualizarTurnos();
+
+});
+
+$(document).on("click",".btnTicket", function() {
+    let id_viaje= $(this).attr("data-attr");
+    $.post({
+        url: window.routes.generarTicket,
+        data: {
+        id_viaje: id_viaje
+        },
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Incluye el token CSRF aquí
+        },
+        success: (res) => {
+            if(res.ok) {
+                $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
+                $(".btnModal").click();
+                        
+            }
+        }
+    });    
+})
+
+$(document).on("click",'.btnAgregarTurno', function() {
+    id_viaje= $(this).attr("data-attr");
+    $(".btnModalAsigViaje").click();
+});
+
+//Nuevo Turno
+$(document).on("click",".btnNuevoTurno", function() {
+    let id_vehiculo_operador = $(this).attr('data-attr');
+    if(id_vehiculo_operador != 0) {
+        swalWithBootstrapButtons.fire({
+            title: "Turno creado",
+            text: "Actualizando Ventanillas",
+            showConfirmButton: false,
+            timer: 30000
+        });
+        swalWithBootstrapButtons.showLoading();
+        $.post({
+            url: window.routes.agregarNuevoTurno, 
+            data: {
+                id_vehiculo_operador: id_vehiculo_operador
+            },
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Incluye el token CSRF aquí
+            }, 
+            success: function(res) {
+                if(res.ok) {
+                    Swal.close();
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: "Turno agregado a la lista",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then((result) => {
+                        /* Read more about handling dismissals below */
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            $(".btnModalClose").click();
+                        }
+                    });                
+                }else {
+                    Swal.fire({
+                        title: "Aviso!",
+                        text: res.message,
+                        icon: "warning",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                }
+            }
+        });
+    }else {
+        Swal.fire({
+            title: "Aviso!",
+            text: "Primero seleccione un operador",
+            icon: "warning",
+            showConfirmButton: false,
+            timer: 1500
+        })
+    } 
+});
+
+//Eliminar Turno
+$(document).on("click",".btnEliminarTurno", function() {
+    let id_turno = $(this).attr('data-attr');
+    swalWithBootstrapButtons.fire({
+        title: "Turno eliminado",
+        text: "Actualizando Ventanillas",
+        showConfirmButton: false,
+        timer: 30000
+    });
+    swalWithBootstrapButtons.showLoading();
+    $.post({
+        url: window.routes.eliminarTurno, 
+        data: {
+            id_turno: id_turno
+        },
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Incluye el token CSRF aquí
+        }, 
+        success: function(res) {
+            if(res.ok) {
+                Swal.close();
+                Swal.fire({
+                    title: "Buen trabajo!",
+                    text: "Turno eliminado de la lista",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                });                
+            }else {
+                Swal.fire({
+                    title: "Aviso!",
+                    text: res.message,
+                    icon: "warning",
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            }
+        }
+    });
+});
+
+//Cancelar Viaje
+$(document).on("click",".btnCancelar", function() {
+    id_viaje = $(this).attr("data-attr");
+    Swal.fire({
+        title: "¿Seguro que deseas cancelar el viaje?",
+        text: "Una vez cancelado ya no se podra recuperar",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, cancelar",
+        cancelButtonText: "No, mejor no"
+      }).then((result) => {
+        if (result.isConfirmed) {
+            // swalWithBootstrapButtons.fire({
+            //     title: "Viaje cancelado",
+            //     text: "Eliminando turno en ventanillas",
+            //     showConfirmButton: false,
+            //     timer: 30000
+            // });
+            // swalWithBootstrapButtons.showLoading();
+            $.post(window.routes.cancelarViaje, {id_viaje: id_viaje}, (res) => {
+                if(res.ok) {
+                    Swal.close();
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: res.data,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }else {
+                    Swal.fire({
+                        title: "Aviso!",
+                        text: res.message,
+                        icon: "warning",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
+        }
+      });
+    
+})
+
+//Asignar Operador a Viaje
+$(document).on("click",".btnAsignarOperador", function() {
+    id_viaje = $(this).attr("data-attr");
+    Swal.fire({
+        title: "¿Has realizado el cobro del servicio?",
+        text: "Recuerda cobrar antes de generar el ticket",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, ya lo he realizado",
+        cancelButtonText: "No, aún no"
+      }).then((result) => {
+        if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire({
+                title: "Operador asignado al viaje",
+                text: "Eliminando turno en ventanillas",
+                showConfirmButton: false,
+                timer: 30000
+            });
+            swalWithBootstrapButtons.showLoading();
+            $.post(window.routes.asignarOperadorAViaje, {id_viaje: id_viaje}, (res) => {
+                if(res.ok) {
+                    Swal.close();
+                    actualizarTablaViajes(user.id_empresa, user.caja_id);
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: res.data,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }else {
+                    Swal.fire({
+                        title: "Aviso!",
+                        text: res.message,
+                        icon: "warning",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
+        }
+      });
+    
+})
+
+//Abrir Modal Asignacion libre
+$(document).on("click",".btnAsignarOperadorAdmin", function() {
+    id_viaje = $(this).attr("data-attr");
+    $.get(window.routes.obtenerTurnosAsync, (res) => {
+        $(".lstTurnosAdmin").html(actualizarListaTurnos(res, 1));
+        $(".btnModalAsigViajeAdmin").click();
+    })
+});
+
+//Abrir Modal Asignacion libre
+$(document).on("click",".btnAsignarViajeAdmin", function() {
+    let id_vehiculo_operador = $(this).attr("data-attr");
+    Swal.fire({
+        title: "¿Seguro que desear agregar a este operador al viaje?",
+        text: "Lo puedes cambiar en cualquier momento",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, asignar",
+        cancelButtonText: "No, mejor no"
+    }).then((result) => {
+    if (result.isConfirmed) {
+        swalWithBootstrapButtons.fire({
+            title: "Operador asignado al viaje",
+            text: "Eliminando turno en ventanillas",
+            showConfirmButton: false,
+            timer: 30000
+        });
+        swalWithBootstrapButtons.showLoading();
+        $.post(window.routes.asignarOperadorAViajeAdmin, {id_viaje: id_viaje, id_vehiculo_operador: id_vehiculo_operador}, (res) => {
+            if(res.ok) {
+                Swal.close();
+                // actualizarTablaViajes(user.id_empresa, user.caja_id);
+                $(".btnModalAsigViajeAdminClose").click();
+                Swal.fire({
+                    title: "Buen trabajo!",
+                    text: res.data,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }else {
+                Swal.fire({
+                    title: "Aviso!",
+                    text: res.message,
+                    icon: "warning",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+    }
+    });
+});
+
+//Iniciar Operaciones
+$(document).on("click","#iniciarOperacion", function() {
+    $.post(window.routes.inicioOperacion, {}, (res) => {
+        if(res.ok) {
+            Swal.fire({
+                title: "Buen trabajo!",
+                text: res.data,
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    $(".buttons-operations").html(`
+                        <button class="btn btn-sm btn-danger btn-style" id="cierreOperacion">
+                            <span class="mdi--close-box"></span> &nbsp;
+                            Cierre de caja
+                        </button>
+                    `);
+                }
+            });
+        }else {
+            Swal.fire({
+                title: "Aviso!",
+                text: res.message,
+                icon: "warning",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    });
+})
+
+//Cerrar Operaciones
+$(document).on("click","#cierreOperacion", function() {
+    Swal.fire({
+        title: "¿Seguro que desesas realizar el cierre de operaciones?",
+        text: "Cerrada la operación no podras registrar más viajes en tu turno",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, cerrar operaciones",
+        cancelButtonText: "No, aún no"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post(window.routes.cierreOperacion, {}, (res) => {
+                if(res.ok) {
+                    Swal.fire({
+                        title: "Buen trabajo!",
+                        text: res.data,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 3000
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.timer) {
+
+                            $(".btnModalCierreOperacion").click();
+                            infoCierre(res);
+                            $(".buttons-operations").html(`
+                                <button class="btn btn-sm btn-success btn-style" id="iniciarOperacion">
+                                    <span class="material-symbols--not-started"></span> &nbsp;
+                                    Inicio de operaciones
+                                </button>
+                            `);
+                            table.clear();
+                            table.draw();
+                        }
+                    }); 
+                }else {
+                    Swal.fire({
+                        title: "Aviso!",
+                        text: res.message,
+                        icon: "warning",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
+        }
+    });
+})
+
+function actualizaViajes() {
+    Echo.channel('table-event')
+    .listen('ActualizarViajes', (res) => {
+        let caja_id= res.viajes.caja_id;
+        if(user.caja_id == caja_id || parseInt(caja_id) == 0 || parseInt(caja_id) == -1) {
+            caja_id = parseInt(caja_id) == 0 ? user.caja_id : caja_id;
+            if(user.permisos.perfil != "Administrador" && parseInt(caja_id) != -1) {
+                actualizarTablaViajes(user.id_empresa, caja_id);
+            }else {
+                if(user.permisos.perfil == "Administrador") {
+                    actualizarTablaViajes(user.id_empresa, 0);
+                }
+            }         
+        } 
+    });
+
+}
+
+function actualizarTurnos() {
+    Echo.channel('turnos-event')
+    .listen('ActualizarTurno', (res) => {
+        let html = actualizarListaTurnos(res.turnos);
+        $(".lstTurnos").html(html);
+    });
+}
+
+function actualizarListaTurnos(res, tipo = 0) {
+    let html =`<li class="list-group-item text-center">Aún no hay vehiculos en turno</li>`;
+    if(res.ok) {
+        if(res.data.length > 0) {
+            html = "";
+            res.data.forEach((element, index) => {
+                if(tipo == 1) {
+                    let nombre = (element.nombres+" "+element.apellidos).substring(0,35);
+                    html+= `
+                        <li class="list-group-item row px-0 mx-0 d-flex">
+                            <div class="col-2 px-0 border-orden">${ index+1 }</div>
+                            <div class="col-10 d-flex justify-content-between">
+                                <div class="d-flex flex-column">
+                                    <p class="py-0 my-0 lstTitulo">${ nombre }</p>
+                                    <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
+                                </div>
+                                <button class="btn btn-sm btn-secondary text-white btnAsignarViajeAdmin" data-attr="${ element.id_vehiculo_operador }"  title="Asignar Operador">
+                                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </li>
+                    `;
+                }
+                if(tipo == 0) {
+                    let nombre = (element.nombres+" "+element.apellidos).substring(0,25)
+                    if(user.permisos.perfil == "Administrador") {
+                        html+= `
+                            <li class="list-group-item row px-0 mx-0 d-flex">
+                                <div class="col-2 px-0 border-orden">${ index+1 }</div>
+                                <div class="col-10 d-flex justify-content-between">
+                                    <div class="d-flex flex-column">
+                                        <p class="py-0 my-0 lstTitulo">${ nombre }</p>
+                                        <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-danger text-white btnEliminarTurno" data-attr="${ element.id_turno }"  title="Eliminar Turno">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        `;
+                    }else {
+                        html+= `
+                            <li class="list-group-item row px-0 mx-0 d-flex">
+                                <div class="col-3 px-0 border-orden">${ index+1 }</div>
+                                <div class="col-9 d-flex flex-column">
+                                    <p class="py-0 my-0 lstTitulo">${ nombre }</p>
+                                    <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
+                                </div>
+                            </li>
+                        `;
+                    }                   
+                }                
+            });
+        }
+    }
+    return html;
+}
+
+function actualizarTablaViajes(id_empresa, caja_id) {
+    $.post(window.routes.obtenerReservasCaja, {id_empresa : id_empresa, caja_id : caja_id}, (res) => {
+        if(res.ok) {
+            table = null;
+            $('#datatable').DataTable().destroy();
+            $("#datatable tbody").html(res.data);
+            //Inicializamos un nuevo datatable
+            table = inicarTabla();
+        }
+    });
+}
+
+function inicarTabla() {
+    return new DataTable('#datatable', {
         ordering: false,
         lengthMenu: [[8,15,25,50,-1],["8","15","25","50","Todos"]],
         scrollY: '500px',
@@ -33,201 +501,24 @@ $(window).on("load", function() {
             }
         }
     });
-    user = window.user;
-    // actualizaViajes();
-    actualizarTurnos();
-});
-
-$(document).on("click",".btnTicket", function() {
-    let id_viaje= $(this).attr("data-attr");
-    $.post(window.routes.generarTicket,{
-        id_viaje: id_viaje
-    }, (res) => {
-        if(res.ok) {
-            Swal.fire({
-                title: "Confirmación",
-                text: "¿Se ha realizado el cobro del servicio?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Si, generar ticket",
-                cancelButtonText: "Cancelar"
-              }).then((result) => {
-                if (result.isConfirmed) {
-                    $("#pdfShow").attr("data","data:application/pdf;base64,"+res.data)
-                    $(".btnModal").click();
-                }
-              });            
-        }
-    });    
-})
-
-$(document).on("click",'.btnAgregarTurno', function() {
-    id_viaje= $(this).attr("data-attr");
-    $(".btnModalAsigViaje").click();
-});
-
-//Nuevo Turno
-$(document).on("click",".btnNuevoTurno", function() {
-    let id_vehiculo_operador = $(this).attr('data-attr');
-    if(id_vehiculo_operador != 0) {
-        $.post(window.routes.agregarNuevoTurno, {
-            id_vehiculo_operador: id_vehiculo_operador
-        }, function(res) {
-            if(res.ok) {
-                actualizarTurnos();
-                Swal.fire({
-                    title: "Buen trabajo!",
-                    text: "Turno agregado a la lista",
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then((result) => {
-                    /* Read more about handling dismissals below */
-                    if (result.dismiss === Swal.DismissReason.timer) {
-                        $(".btnModalClose").click();
-                    }
-                });                
-            }else {
-                Swal.fire({
-                    title: "Aviso!",
-                    text: res.message,
-                    icon: "warning",
-                    showConfirmButton: false,
-                    timer: 2000
-                })
-            }
-        });
-    }else {
-        Swal.fire({
-            title: "Aviso!",
-            text: "Primero seleccione un operador",
-            icon: "warning",
-            showConfirmButton: false,
-            timer: 1500
-        })
-    } 
-});
-
-//Asignar Operador a Viaje
-$(document).on("click",".btnAsignarOperador", function() {
-    id_viaje = $(this).attr("data-attr");
-    $.post(window.routes.asignarOperadorAViaje, {id_viaje: id_viaje}, (res) => {
-        if(res.ok) {
-            Swal.fire({
-                title: "Buen trabajo!",
-                text: res.data,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500
-            }).then((result) => {
-                /* Read more about handling dismissals below */
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    location.reload();
-                }
-            });
-        }else {
-            Swal.fire({
-                title: "Aviso!",
-                text: res.message,
-                icon: "warning",
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
-    });
-})
-
-function actualizaViajes() {
-    Echo.private('client.1')
-    .listen('UpdateClient', (res) => {
-        console.log(res);
-        return;
-        let html =`
-        <tr>
-            <td>{{ $reservacion->folio }}</td>`;
-            if(user.permisos.perfil.include(["Cajera","Administrador"])) {
-                html+= `<td>
-                            {{ strtoupper($reservacion->nombre) }}
-                            <br>
-                            {{ $reservacion->telefono }}
-                        </td>`;
-            }
-            html+= `<td>
-                        1. {{ $reservacion->origen }} 
-                        <br>
-                        2. {{ $reservacion->destino }}
-                    </td>`;
-            if(isset(res.status)) {
-                if(res.status == "Pending") {
-                    html += `<td class="text-center"><span class="badge rounded-pill bg-primary">Sin asginación</span></td>`;
-                }
-                if(res.status == "En servicio") {
-                    html += `<td class="text-center">
-                                <span class="badge rounded-pill bg-success">Asignado</span>
-                                <br>
-                                {{ $reservacion->nombres }} {{ $reservacion->apellidos }}
-                            </td>`;
-                }
-            }
-            if(user.permisos.perfil.include(["Cajera","Administrador"])) {
-                const precio_formateado = res.precio.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
-                html += `<td class="text-center cp" title="${ res.tipo_pago }">${ precio_formateado }</td>`;
-            }
-            html += `<td>{{ date('d-m-Y H:m',strtotime($reservacion->date_creacion)) }}</td>`;
-            if(user.permisos.perfil.include(["Cajera","Administrador"])) {
-                html += `<td>`;
-                    if(typeof res.status !== 'undefined' && res.status !== null) {
-                        if(res.status == "Pending") {
-                            html += `<button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
-                                        <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
-                                        <i class="fa fa-check-square" aria-hidden="true"></i>
-                                    </button>`;
-                        } else {
-                            html += `<button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
-                                <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                            </button>`;
-                        }
-                    } else {
-                        html+= `<button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
-                                    <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
-                                </button>`;
-                    }
-                    
-                html += `</td>`;
-            }
-        html += `</tr>`;
-        $("#viajes").append(html);
-    });
-
 }
 
-function actualizarTurnos() {
-    Echo.channel('turnos-event')
-    .listen('ActualizarTurno', (res) => {
-        let html ="";
-        res = res.turnos;
-        if(res.ok && res.data.length > 0) {
-            console.log(res);
-            res.data.forEach((element, index) => {
-                let nombre = (element.nombres+" "+element.apellidos).substring(0,25)
-                html+= `
-                    <li class="list-group-item row px-0 mx-0 d-flex">
-                        <div class="col-3 px-0 border-orden">${ index+1 }</div>
-                        <div class="col-9 d-flex flex-column">
-                            <p class="py-0 my-0 lstTitulo">${ nombre }</p>
-                            <small class="lstTurnoSmall text-danger">${ element.vehiculo+"-"+element.marca+" ("+element.modelo+")" }</small>
-                        </div>
-                    </li>
-                `;
-            });
-            $(".lstTurnos").html(html);
-        }
+function infoCierre(res) {
+    $(".no_venta").text(res.totales.no_ventas);
+    $(".total_cash").text("$ "+res.totales.total_cash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    $(".total_tarjet").text("$ "+res.totales.total_tarjet.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    $(".total").text("$ "+res.totales.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    $(".txtTitleCorte").text("Ciere de "+res.caja);
+    let html = "";
+    res.ventas.forEach(element => {
+        html += `
+            <tr>
+                <th scope="row">${element.folio}</th>
+                <td>${element.tipo_pago}</td>
+                <td>${element.precio}</td>
+                <td>${element.status}</td>
+            </tr>
+        `;
     });
+    $(".infoVentas").html(html);
 }
