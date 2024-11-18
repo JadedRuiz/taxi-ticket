@@ -22,6 +22,8 @@ use App\Http\Controllers\Controller;
     Route::group(['as' => 'auth.','prefix' => 'auth'], function () {
         //Inicio Caja
         Route::post('inicioOperacion',[UsuarioController::class, 'inicioOperacion'])->name("inicioOperacion");
+        //Lista Resultados        
+        Route::post('listaResultados', [UsuarioController::class, 'listaResultados'])->name('listaResultados');
         //Cierre Caja
         Route::post('cierreOperacion',[UsuarioController::class, 'cierreOperacion'])->name("cierreOperacion");
         //Loguearse
@@ -53,7 +55,8 @@ use App\Http\Controllers\Controller;
                 Route::post('agregarNuevoTurno', [AdminController::class, 'agregarNuevoTurno'])->name('agregarNuevoTurno');
                 Route::post('eliminarTurno', [AdminController::class, 'eliminarTurno'])->name('eliminarTurno');   
                 Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync'); 
-                Route::post('obtenerReservasCaja', [AdminController::class, 'obtenerReservasCaja'])->name('obtenerReservasCaja');         
+                Route::post('obtenerReservasCaja', [AdminController::class, 'obtenerReservasCaja'])->name('obtenerReservasCaja');
+                         
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');

@@ -19,9 +19,9 @@
                             @if($turno_caja != null) 
                                 <div class="buttons-operations">
                                     @if($turno_caja["ok"]) 
-                                        <button class="btn btn-sm btn-danger btn-style" id="cierreOperacion">
-                                            <span class="mdi--close-box"></span> &nbsp;
-                                            Cierre de caja
+                                        <button class="btn btn-sm btn-info btn-style text-white" id="modalListaResultados">
+                                            <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp;
+                                            Tabla de resultados
                                         </button>
                                     @else
                                         <button class="btn btn-sm btn-success btn-style" id="iniciarOperacion">
@@ -84,7 +84,6 @@
                                                 <li class="list-group-item text-center">Aún no hay vehiculos en turno</li>
                                             </div>
                                         @endif
-                                        
                                     </ul>
                                 </div>
                             @endif
@@ -124,8 +123,11 @@
                                                     2. {{ $reservacion->destino }}
                                                 </td>
                                                 @if(isset($reservacion->status))
-                                                    @if($reservacion->status == "Pending")
+                                                    @if($reservacion->status == "Pending" || $reservacion->status == "Cobrado")
                                                         <td class="text-center"><span class="badge rounded-pill bg-primary">Sin asginación</span></td>
+                                                    @endif
+                                                    @if($reservacion->status == "Cancelado")
+                                                        <td class="text-center"><span class="badge rounded-pill bg-warning">Cancelado</span></td>
                                                     @endif
                                                     @if($reservacion->status == "En servicio")
                                                         <td class="text-center">
@@ -139,17 +141,18 @@
                                                     <td class="text-center cp" title="{{ $reservacion->tipo_pago }}">{{ "$". number_format($reservacion->precio,2) }}</td>
                                                 @endif
                                                 <td>{{ date('d-m-Y H:i',strtotime($reservacion->date_creacion)) }}</td>
-                                                @if(in_array($user->permisos->perfil, ["Cajera"]))
+                                                @if(in_array($user->permisos->perfil, ["Cajera"]) && $reservacion->status != "Cancelados")
                                                     <td>
                                                         @if(isset($reservacion->status))
-                                                            @if($reservacion->status == "Pending")
+                                                            @if($reservacion->status == "Pending" || $reservacion->status == "Cobrado")
                                                                 {{-- <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}" disabled="true">
                                                                     <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
                                                                 </button> --}}
                                                                 <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
                                                                     <i class="fa fa-check-square" aria-hidden="true"></i>
                                                                 </button>
-                                                            @else
+                                                            @endif
+                                                            @if($reservacion->status == "En servicio")
                                                                 <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
                                                                     <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
                                                                 </button>
@@ -164,7 +167,7 @@
                                                 @if(in_array($user->permisos->perfil, ["Administrador"]))
                                                     <td>
                                                         <div class="dropdown">
-                                                            <button class="btn btn-sm btn-info text-white" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <button class="btn btn-sm btn-info text-white {{$reservacion->status == "Cancelado" ? 'disabled' : ''}}" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="fa fa-bars" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
@@ -226,6 +229,7 @@
                 'asignarOperadorAViaje' : '{{ route('admin.api.asignarOperadorAViaje') }}',
                 'asignarOperadorAViajeAdmin' : '{{ route('admin.api.asignarOperadorAViajeAdmin') }}',
                 'inicioOperacion' : '{{ route('auth.inicioOperacion') }}',
+                'listaResultados' : '{{ route('auth.listaResultados') }}',
                 'cierreOperacion' : '{{ route('auth.cierreOperacion') }}',
                 'cancelarViaje' : '{{ route('admin.api.cancelarViaje') }}',
                 'obtenerReservasCaja' : '{{ route('admin.api.obtenerReservasCaja') }}'

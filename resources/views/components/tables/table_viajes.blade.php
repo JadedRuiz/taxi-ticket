@@ -12,8 +12,11 @@
             2. {{ $reservacion->destino }}
         </td>
         @if(isset($reservacion->status))
-            @if($reservacion->status == "Pending")
+            @if($reservacion->status == "Pending" || $reservacion->status == "Cobrado")
                 <td class="text-center"><span class="badge rounded-pill bg-primary">Sin asginación</span></td>
+            @endif
+            @if($reservacion->status == "Cancelado")
+                <td class="text-center"><span class="badge rounded-pill bg-warning">Cancelado</span></td>
             @endif
             @if($reservacion->status == "En servicio")
                 <td class="text-center">
@@ -28,11 +31,12 @@
         @if($caja_id != 0)
             <td>
                 @if(isset($reservacion->status))
-                    @if($reservacion->status == "Pending")
+                    @if($reservacion->status == "Pending" || $reservacion->status == "Cobrado")
                         <button class="btn btn-sm btn-secondary text-white btnAsignarOperador" data-attr="{{ $reservacion->id_viaje }}"  title="Asignar Operador">
                             <i class="fa fa-check-square" aria-hidden="true"></i>
                         </button>
-                    @else
+                    @endif
+                    @if($reservacion->status == "En servicio")
                         <button class="btn btn-sm btn-info text-white btnTicket" data-attr="{{ $reservacion->id_viaje }}">
                             <i class="fa fa-print" aria-hidden="true" title="Generar Ticket"></i>
                         </button>
@@ -48,7 +52,7 @@
         @if($caja_id == 0)
             <td>
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-info text-white" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn-info text-white {{$reservacion->status == "Cancelado" ? 'disabled' : ''}}" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-bars" aria-hidden="true"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">

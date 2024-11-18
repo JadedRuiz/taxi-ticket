@@ -43,8 +43,8 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-12 d-flex justify-content-center align-items-center">
-                        <div class="btn btn-sm btn-warning text-white" data-bs-dismiss="modal" aria-label="Close">Cerrar</div>&nbsp;&nbsp;
-                        <a class="btn btn-sm btn-danger text-white" href="{{ route('auth.logout') }}">Cerrar sesión</a>
+                        <a class="btn btn-sm btn-danger text-white cp" id="cierreOperacion">Cierre de operacion</a>&nbsp;&nbsp;
+                        <div class="btn btn-sm btn-warning text-white" data-bs-dismiss="modal" aria-label="Close">Cerrar</div>
                     </div>
                 </div>      
             </div>

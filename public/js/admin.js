@@ -307,13 +307,41 @@ $(document).on("click","#iniciarOperacion", function() {
             }).then((result) => {
                 if (result.dismiss === Swal.DismissReason.timer) {
                     $(".buttons-operations").html(`
-                        <button class="btn btn-sm btn-danger btn-style" id="cierreOperacion">
-                            <span class="mdi--close-box"></span> &nbsp;
-                            Cierre de caja
+                        <button class="btn btn-sm btn-info btn-style text-white" id="modalListaResultados">
+                            <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp;
+                            Tabla de resultados
                         </button>
                     `);
                 }
             });
+        }else {
+            Swal.fire({
+                title: "Aviso!",
+                text: res.message,
+                icon: "warning",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    });
+})
+
+//Abrir modal tabla resultados
+$(document).on("click","#modalListaResultados", function() {
+    $.post(window.routes.listaResultados, {}, (res) => {
+        if(res.ok) {
+            Swal.fire({
+                title: "Buen trabajo!",
+                text: res.data,
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    $(".btnModalCierreOperacion").click();
+                    infoCierre(res);
+                }
+            }); 
         }else {
             Swal.fire({
                 title: "Aviso!",
@@ -349,9 +377,6 @@ $(document).on("click","#cierreOperacion", function() {
                         timer: 3000
                     }).then((result) => {
                         if (result.dismiss === Swal.DismissReason.timer) {
-
-                            $(".btnModalCierreOperacion").click();
-                            infoCierre(res);
                             $(".buttons-operations").html(`
                                 <button class="btn btn-sm btn-success btn-style" id="iniciarOperacion">
                                     <span class="material-symbols--not-started"></span> &nbsp;

@@ -15,6 +15,7 @@ use App\Models\OperadorModel as Operador;
 use Illuminate\Support\Facades\Mail;
 use App\Events\ActualizarTurno;
 use App\Events\ActualizarViajes;
+use GuzzleHttp\Client;
 
 class AdminController extends Controller
 {
@@ -142,7 +143,7 @@ class AdminController extends Controller
     }
 
     public function encriptar(Request $body) {
-        return $this->encode_json($body["password"]);
+        return $this->decode_json($body["password"]);
     }
 
     public function obtenerTurnoCaja($caja_id) {
@@ -261,6 +262,7 @@ class AdminController extends Controller
                     $message->to(getenv('MAIL_ADMIN'),'Administrador MyRide');
                 });
             }
+
             //Actualizamos las cajas
             broadcast(new ActualizarViajes([
                 "caja_id" => $caja_id
@@ -269,9 +271,9 @@ class AdminController extends Controller
             broadcast(new ActualizarViajes([
                 "caja_id" => -1
             ]));
-            DB::commit();
-            //Actualizar viajes en tiempo real
+
             
+            DB::commit();            
 
             return ['ok' => true, "data" => "Registro Exitoso"];
 
@@ -514,7 +516,15 @@ class AdminController extends Controller
 
     public function cancelarViaje(Request $res) {
         try {
-            DB::table('tbl_viajes')->where('id_viaje', $res->id_viaje)->delete();
+            DB::table('tbl_viajes')->where('id_viaje', $res->id_viaje)
+            ->update([
+                "status" => "Cancelado"
+            ]);
+            
+            //Actualizamos todos los clientes
+            broadcast(new ActualizarViajes([
+                "caja_id" => 0
+            ]));
             
             return ["ok" => true, "message" => "El viaje ha sido cancelado."];
         } catch(\PdoException | \Error | \Exception $e) {

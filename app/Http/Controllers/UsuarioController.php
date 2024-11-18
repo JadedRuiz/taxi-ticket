@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use App\Events\ActualizarViajes;
+use Illuminate\Support\Facades\Log;
 
 class UsuarioController extends Controller
 {
@@ -42,9 +44,66 @@ class UsuarioController extends Controller
             "dt_create" => date('Y-m-d')
         ]);
 
+        //Actualizamos todos los clientes
+        broadcast(new ActualizarViajes([
+            "caja_id" => 0
+        ]));
+
         return ["ok" => true, "data" => "Has iniciado el turno a las ".date('d-m-Y H:i')];
     }
 
+    public function listaResultados() {
+        try {
+            if(session('user')) {
+                $user = json_decode($this->decode_json(session('user')[0]));   
+            }else {
+                return ["ok" => false, "message" => "La sesion ha expirado"];
+            }
+            $info_venta = DB::table("tbl_viajes as tblV")
+            ->select("id_viaje","folio","tblDd.precio","tblV.status","dtV.tipo_pago","tTC.dt_inicio_operacion","tblV.date_creacion","tblDd.precio")
+            ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
+            ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
+            ->join("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
+            ->where("tblV.empresa_id",$user->id_empresa)
+            ->whereIn("tblV.status",["Pending","En servicio"])
+            ->where("tblV.caja_id",$user->caja_id)
+            ->where("tTC.b_status","1")
+            ->get();
+
+            $ventas= [];
+            $total_ventas=0;
+            $total_efectivo= 0;
+            $total_tarjeta=0;
+            foreach($info_venta as $venta) {
+                if($venta->date_creacion >= $venta->dt_inicio_operacion) {
+                    $total_ventas++;
+                    if($venta->tipo_pago == "Cash") {
+                        $total_efectivo += $venta->precio; 
+                    } else {
+                        $total_tarjeta += $venta->precio;
+                    }
+                    array_push($ventas, $venta);
+                }
+            }
+            $total = floatval($total_efectivo) + floatval($total_tarjeta);
+
+            return [
+                "ok" => true, 
+                "data" => "A contuniacion se mostrará el detalle de la operación al momento",
+                "caja" => $user->nombre,
+                "ventas" => $ventas,
+                "totales" => [
+                    "no_ventas" => $total_ventas,
+                    "total_cash" => $total_efectivo,
+                    "total_tarjet" => $total_tarjeta,
+                    "total" => $total
+                ]
+            ];
+        } catch(\Exception | \PDOException $e) {
+            Log::error("ERROR En método [listaResultados]: ".$e->getMessage());
+            return ["ok" => false, "message" => "E-AD-GEN : ".$e->getMessage()];
+        }
+    }
     public function cierreOperacion(Request $request) {
         //Variables
         $user = null;
@@ -72,7 +131,7 @@ class UsuarioController extends Controller
         ->join("tbl_turnos_caja as tTC","tTC.caja_id","=","tblV.caja_id")
         ->join("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
         ->where("tblV.empresa_id",$user->id_empresa)
-        ->where("tblV.status",'<>',"Cerrado")
+        ->whereIn("tblV.status",["Pending","En servicio"])
         ->where("tblV.caja_id",$user->caja_id)
         ->where("tTC.b_status","1")
         ->get();
@@ -82,6 +141,7 @@ class UsuarioController extends Controller
         $total_efectivo= 0;
         $total_tarjeta=0;
         $ids_cerrar=[];
+        $ids_cobrados=[];
         foreach($info_venta as $venta) {
             if($venta->date_creacion >= $venta->dt_inicio_operacion) {
                 $total_ventas++;
@@ -90,7 +150,12 @@ class UsuarioController extends Controller
                 } else {
                     $total_tarjeta += $venta->precio;
                 }
-                array_push($ids_cerrar, $venta->id_viaje);
+                if($venta->status == "En servicio") {
+                    array_push($ids_cerrar, $venta->id_viaje);
+                }
+                if($venta->status == "Pending") {
+                    array_push($ids_cobrados, $venta->id_viaje);
+                }
                 array_push($ventas, $venta);
             }
         }
@@ -100,26 +165,33 @@ class UsuarioController extends Controller
         ->update([
             "caja_id" => $user->caja_id, 
             "b_status" => 0, 
-            "dt_fin_operacion" => date("Y-m-d h:i:s"), 
+            "dt_fin_operacion" => date("Y-m-d h:i:s"),
+            "no_ventas" => $total_ventas,
+            "total_efectivo" => $total_efectivo,
+            "total_tarjeta" => $total_tarjeta,
             "total_venta" => $total
         ]);
+        //Cerramos los asignados
         DB::table("tbl_viajes")
         ->whereIn("id_viaje",$ids_cerrar)
         ->update([
             "status" => 'Cerrado'
         ]);
-        
+        //Los pendientes solo cambia a status cobrados
+        DB::table("tbl_viajes")
+        ->whereIn("id_viaje",$ids_cobrados)
+        ->update([
+            "status" => 'Cobrado'
+        ]);
+
+        //Actualizamos todos los clientes
+        broadcast(new ActualizarViajes([
+            "caja_id" => 0
+        ]));
+
         return [
             "ok" => true, 
-            "data" => "El turno ha sido cerrado correctamente, a contuniacion se mostrará el detalle de tu cierre",
-            "caja" => $user->nombre,
-            "ventas" => $ventas,
-            "totales" => [
-                "no_ventas" => $total_ventas,
-                "total_cash" => $total_efectivo,
-                "total_tarjet" => $total_tarjeta,
-                "total" => $total
-            ]
+            "data" => "El turno ha sido cerrado correctamente",            
         ];
     }
 
