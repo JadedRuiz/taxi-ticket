@@ -31,7 +31,6 @@
                                     @endif
                                 </div>                                
                             @endif
-                           
                         </div>                        
                         <p class="card-title-desc my-0">Esta tabla se muesta los viajes que se han realizado en taquilla</p>
                         <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">

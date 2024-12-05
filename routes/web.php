@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\VehiculosController;
 use App\Http\Controllers\OperadorController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\Controller;
 
 #region [Vistas]
@@ -44,6 +45,8 @@ use App\Http\Controllers\Controller;
             Route::get('vehiculos', [VehiculosController::class, 'index'])->name('vehiculos');
             //Destinos
             Route::get('destinos', [DestinoController::class, 'index'])->name('destinos');
+            //Reportes
+            Route::get('reportes', [ReporteController::class, 'index'])->name('reportes');
         #endregion
         #region [Rutas Api]
             Route::group(['as' => 'api.','prefix' => 'api'], function () {
