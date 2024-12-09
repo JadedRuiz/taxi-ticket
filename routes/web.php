@@ -72,6 +72,8 @@ use App\Http\Controllers\Controller;
                 Route::post('asignarOperadorVehiculo', [OperadorController::class, 'asignarOperadorVehiculo'])->name('asignarOperadorVehiculo');
                 Route::post('obtenerOperadorPorId', [OperadorController::class, 'obtenerOperadorPorId'])->name('getOperadorId');
                 Route::get('nuevoTurnoOperadores', [OperadorController::class, 'nuevoTurnoOperadores'])->name('nuevoTurnoOperadores');
+                //CRUD Reportes
+                Route::post('generarConsulta', [ReporteController::class, 'generarConsulta'])->name('generarConsulta');
 
             });
         #endregion 

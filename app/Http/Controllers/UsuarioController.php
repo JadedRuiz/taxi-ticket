@@ -165,7 +165,7 @@ class UsuarioController extends Controller
         ->update([
             "caja_id" => $user->caja_id, 
             "b_status" => 0, 
-            "dt_fin_operacion" => date("Y-m-d h:i:s"),
+            "dt_fin_operacion" => date("Y-m-d H:i:s"),
             "no_ventas" => $total_ventas,
             "total_efectivo" => $total_efectivo,
             "total_tarjeta" => $total_tarjeta,
