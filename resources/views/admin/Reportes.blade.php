@@ -38,8 +38,9 @@
                                 <label class="lblInp">Seleccione el operador:</label>
                                 <select class="form-select" id="operador" name="filtro_operador">
                                     @if($data_view["operadores"]["ok"])
+                                        <option value='-1' selected>Todos</option>
                                         @foreach($data_view["operadores"]["data"] as $operador)
-                                            <option value='{{$operador->id_operador}}' selected>{{ $operador->nombres ." ".$operador->apellidos }}</option>
+                                            <option value='{{$operador->id_operador}}'>{{ $operador->nombres ." ".$operador->apellidos }}</option>
                                         @endforeach
                                     @else
                                         <option value='0' selected>No se han encontrado operadores</option>

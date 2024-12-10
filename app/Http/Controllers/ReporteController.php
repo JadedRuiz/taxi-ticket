@@ -118,18 +118,42 @@ class ReporteController extends Controller
                     }
                     $tabla_viajes = view('components.tables.table_reportes_cajas', compact('turnos', 'columnas','tipo_caja'))->render();
                 }
+                if($request->tipo_filtro == 3 && !empty($request->filtro_operador)) {
+                    $consultaDiezDias = new \DateTime();
+                    $consultaDiezDias->modify('-10 days');
+                    if($request->filtro_operador == -1) {
+                        $operadores = DB::table('tbl_operadores')->select("id_operador",DB::raw('CONCAT(nombres, " ",apellidos) as operador'))->get();
+                    }else {
+                        $operadores = DB::table('tbl_operadores')->select("id_operador",DB::raw('CONCAT(nombres, " ",apellidos) as operador'))
+                        ->where("id_operador",$request->filtro_operador)
+                        ->get();
+                    }
+                    foreach($operadores as $operador) {
+                        $operador->viajes = Viaje::select($columns)
+                        ->join("det_viaje as dV","dV.viaje_id","=","id_viaje")
+                        ->join("tbl_direcciones_webhook as dO","dO.id_direccion","=","dV.origen_id")
+                        ->join("tbl_direcciones_webhook as dD","dD.id_direccion","=","dV.destino_id")
+                        ->join("rel_viaje_vehiculo_operador as rlVVO","rlVVO.viaje_id","=","id_viaje")
+                        ->join("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
+                        ->join("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
+                        ->where("tbl_viajes.empresa_id",$user->id_empresa)
+                        ->where("rlVO.operador_id",$operador->id_operador)
+                        ->when(empty($fechaInicio) && empty($fechaFin), function ($query) use ($consultaDiezDias) {
+                            return $query->where('date_creacion',">=",$consultaDiezDias);
+                        })
+                        ->when(!empty($fechaInicio) && !empty($fechaFin), function ($query) use ($fechaInicio, $fechaFin) {
+                            return $query->whereBetween('date_creacion', [date('Y-m-d',strtotime($fechaInicio)), date('Y-m-d',strtotime($fechaFin))]);
+                        })
+                        ->orderBy("id_viaje","desc")
+                        ->get();
+                    }
+                    $tabla_viajes = view('components.tables.table_reportes_operador', compact('operadores', 'columnas'))->render();
+                }
                 return ["ok"=> true, "data" => $tabla_viajes];
             }
             return ["ok" => false, "message" => "No cuentas con permisos"];
         } catch(\Exception | \PdoException | \Error $e) {
             return ["ok" => false, "message" => "Ha ocurrido un error: ".$e->getMessage()];
         }
-        // $viajes = Viaje::select("folio","status","date_creacion","dV.nombre","correo","telefono","tipo_pago","dW.nombre as direccion","precio")
-        // ->join("det_viaje as dV","dV.viaje_id","=","id_viaje")
-        // ->join("tbl_direcciones_webhook as dW","dW.id_direccion","=","dV.destino_id")
-        // ->where("tbl_viajes.empresa_id",$user->id_empresa)
-        // ->orderBy("id_viaje","desc")
-        // ->limit(350)
-        // ->get();
     }
 }
