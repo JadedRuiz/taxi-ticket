@@ -64,6 +64,7 @@
                                 </select>
                             </div>
                             <button class="btn btn-success" type="submit">Enviar</button>
+                            <a class="btn btn-info text-white mx-2" id="generarExcel">Exportar</a>
                         </form>
                         <div class="row mt-3">
                             <div class="col-12 table-responsive">
