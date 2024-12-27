@@ -19,8 +19,8 @@
 <tbody>
     @if(count($operadores) > 0)
         @foreach($operadores as $operador)
-            <tr class="bg-secondary">
-                <th colspan="{{count($columnas)}}">{{$operador->operador}}</th>
+            <tr class="bg-secondary" data-dif="1">
+                <th colspan="{{count($columnas)}}" class="text-white">{{$operador->operador}}</th>
             </tr>
             @if(count($operador->viajes) > 0)
                 @php $recaudado=0; @endphp
@@ -46,8 +46,8 @@
             @else
                 <tr><td colspan="{{count($columnas)}}" class="text-center">No se han encontrado viajes</td></tr>
             @endif
-            <tr class="bg-secondary">
-                <th colspan="{{count($columnas)}}">Total de viajes: {{count($operador->viajes)}}, Total: ${{number_format($recaudado,2,'.',',')}}</th>
+            <tr class="bg-secondary" data-dif="1">
+                <th colspan="{{count($columnas)}}" class="text-white">Total de viajes: {{count($operador->viajes)}}, Total: ${{number_format($recaudado,2,'.',',')}}</th>
             </tr>
         @endforeach
     @else

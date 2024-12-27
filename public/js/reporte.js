@@ -89,40 +89,64 @@ async function exportarExcel() {
     // Recorrer filas de la tabla HTML
     tabla.find('tr').each((rowIndex, row) => {
         const $row = $(row); // Convertir fila a objeto jQuery
-        const excelRow = worksheet.addRow($row.find('td, th').map((_, cell) => $(cell).text()).get());
+        const cells = $row.find('td, th'); // Obtener todas las celdas de la fila
+        const excelRow = worksheet.addRow([]); // Añadir una fila vacía
+    
+        let colIndex = 1; // Índice de columna en Excel (empieza en 1)
+    
+        cells.each((cellIndex, cell) => {
+            const $cell = $(cell); // Convertir celda a objeto jQuery
+            let text = $cell.text(); // Obtener el texto de la celda
+            const colspan = parseInt($cell.attr('colspan'), 10) || 1; // Detectar colspan
+    
+            // Agregar el contenido de la celda
+            excelRow.getCell(colIndex).value = text;
+    
+            // Si hay un colspan, fusionar celdas en la hoja
+            if (colspan > 1) {
+                const startCol = colIndex;
+                const endCol = colIndex + colspan - 1;
+                worksheet.mergeCells(excelRow.number, startCol, excelRow.number, endCol);
 
-        // Aplicar estilos personalizados según el atributo
-        if ($row.attr('data-dif') === '1') {
-            // Estilo para filas con attr-dif="diferente"
-            excelRow.eachCell(cell => {
+                // Ajustar altura de la fila combinada
+                excelRow.height = 20; // Ajusta el valor de altura según lo necesites
+            }
+    
+            // Estilo personalizado según atributo data-dif o encabezado
+            if ($row.attr('data-dif') === '1') {
+                text = text.trim();
+                // Estilo para filas con attr-dif="diferente"
+                const cell = excelRow.getCell(colIndex);
                 cell.font = {
-                    name: 'Verdana', // Cambiar font-family
+                    name: 'Arial',
                     size: 12,
                     bold: true,
-                    color: { argb: 'FF000000' } // Texto negro
+                    color: { argb: 'ffffffff' } // Texto negro
                 };
                 cell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
-                    fgColor: { argb: 'FFFFC0CB' } // Fondo rosado
+                    fgColor: { argb: 'ff6c757d' } // Fondo gris oscuro
                 };
-            });
-        } else if (rowIndex === 0) {
-            // Estilo para encabezado
-            excelRow.eachCell(cell => {
+            } else if (rowIndex === 0) {
+                // Estilo para encabezado
+                const cell = excelRow.getCell(colIndex);
                 cell.font = {
-                    name: 'Calibri', // Font-family para encabezados
-                    size: 14,
+                    name: 'Arial',
+                    size: 12,
                     bold: true,
-                    color: { argb: 'FFFFFFFF' } // Texto blanco
+                    color: { argb: 'FF000000' } // Texto blanco
                 };
                 cell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
-                    fgColor: { argb: 'FF4CAF50' } // Fondo verde
+                    fgColor: { argb: 'ffe0e0e0' } // Fondo gris claro
                 };
-            });
-        }
+            }
+    
+            // Incrementar índice de columna según el colspan
+            colIndex += colspan;
+        });
     });
 
     // Ajustar ancho automático de las columnas

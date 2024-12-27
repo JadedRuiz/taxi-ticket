@@ -19,8 +19,8 @@
 <tbody>
     @if(count($turnos) > 0)
         @foreach($turnos as $turno)
-            <tr class="bg-secondary">
-                <th colspan="{{count($columnas)}}">Inicio de operacion: {{$turno->dt_inicio_operacion}}</th>
+            <tr class="bg-secondary" data-dif="1">
+                <th colspan="{{count($columnas)}}" class="text-white">Inicio de operacion: {{$turno->dt_inicio_operacion}}</th>
             </tr>
             @if(count($turno->viajes) > 0)
                 @foreach($turno->viajes as $viaje) 
@@ -44,15 +44,8 @@
             @else
                 <tr><td colspan="{{count($columnas)}}" class="text-center">No se han encontrado viajes</td></tr>
             @endif
-            <tr class="bg-secondary">
-                <th colspan="{{count($columnas)}}">
-                    <div class="info-operacion d-flex justify-content-between"">
-                        Fin de operacion: {{$turno->dt_fin_operacion}}, Total Viajes: {{$turno->no_ventas}}
-                        <div class="totales">
-                           Total Efectivo: ${{number_format($turno->total_efectivo,2,'.',',')}}, Total Tarjeta: ${{number_format($turno->total_tarjeta,2,'.',',')}}, Total: ${{number_format($turno->total_venta,2,'.',',')}}
-                        </div>
-                    </div>                    
-                </th>
+            <tr class="bg-secondary" data-dif="1">
+                <th colspan="{{count($columnas)}}" class="text-white">Fin de operacion: {{$turno->dt_fin_operacion}}, Total Viajes: {{$turno->no_ventas}}, <br> Total Efectivo: ${{number_format($turno->total_efectivo,2,'.',',')}}, Total Tarjeta: ${{number_format($turno->total_tarjeta,2,'.',',')}}, Total: ${{number_format($turno->total_venta,2,'.',',')}}</th>
             </tr>
         @endforeach
     @else

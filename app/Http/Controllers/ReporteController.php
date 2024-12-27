@@ -96,10 +96,15 @@ class ReporteController extends Controller
                     $consultaDiezDias->modify('-10 days');
                     $turnos = DB::table('tbl_turnos_caja')->select('id_det_caja','no_ventas','total_tarjeta','total_efectivo','total_venta','dt_inicio_operacion',"dt_fin_operacion")
                     ->where("caja_id",$tipo_caja)
-                    ->where('dt_create',">=",$consultaDiezDias)->where('b_status',0)
+                    // ->where('dt_create',">=",$consultaDiezDias)
+                    ->where('b_status',0)
+                    ->when(empty($fechaInicio) && empty($fechaFin), function ($query) use ($consultaDiezDias) {
+                        return $query->where('dt_create',">=",$consultaDiezDias);
+                    })
                     ->when(!empty($fechaInicio) && !empty($fechaFin), function ($query) use ($fechaInicio, $fechaFin) {
                         return $query->whereBetween('dt_inicio_operacion', [date('Y-m-d H:i:s',strtotime($fechaInicio." 07:00:00")), date('Y-m-d H:i:s',strtotime($fechaFin." 24:00:00"))]);
                     })
+                    ->orderBy("dt_inicio_operacion","desc")
                     ->get();
                     foreach($turnos as $turno) {
                         $turno->viajes = Viaje::select($columns)
@@ -113,11 +118,11 @@ class ReporteController extends Controller
                         ->where("tbl_viajes.caja_id",$tipo_caja)
                         ->where('tbl_viajes.date_creacion',">=", date('Y-m-d H:i:s',strtotime($turno->dt_inicio_operacion)))
                         ->where('tbl_viajes.date_creacion','<=',date('Y-m-d H:i:s',strtotime($turno->dt_fin_operacion)))
-                        ->orderBy("id_viaje","desc")
+                        ->orderBy("id_viaje","asc")
                         ->get();
                     }
                     $tabla_viajes = view('components.tables.table_reportes_cajas', compact('turnos', 'columnas','tipo_caja'))->render();
-                }
+                } 
                 if($request->tipo_filtro == 3 && !empty($request->filtro_operador)) {
                     $consultaDiezDias = new \DateTime();
                     $consultaDiezDias->modify('-10 days');

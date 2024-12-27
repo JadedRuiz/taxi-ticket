@@ -18,7 +18,9 @@
 </thead>
 <tbody>
     @if(count($viajes) > 0)
-        @foreach($viajes as $viaje) 
+        @php $recaudado=0; @endphp
+        @foreach($viajes as $viaje)
+            @php if(isset($viaje->precio)) $recaudado+=$viaje->precio; @endphp
             <tr>
                 @foreach($columnas as $columna)
                     @if($columna == 0) <th class="text-start">{{$viaje->folio}}</th> @endif
@@ -36,6 +38,11 @@
                 @endforeach
             </tr>
         @endforeach
+        @if(in_array(4, $columnas))
+            <tr class="bg-secondary" data-dif="1">
+                <th colspan="{{count($columnas)}}" class="text-white">Total de viajes: {{count($viajes)}}, Total: ${{number_format($recaudado,2,'.',',')}}</th>
+            </tr>
+        @endif
     @else
         <tr><td colspan="{{count($columnas)}}">No se han encontrado resultados</td></tr>
     @endif
