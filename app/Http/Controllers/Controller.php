@@ -9,6 +9,7 @@ abstract class Controller
         // $maxId = DB::table($table)->latest()->first()->;
         DB::statement("ALTER TABLE $table AUTO_INCREMENT=$maxId");
     }
+
     function decode_json($code) {
         $ultimoCharacter = substr($code,-1);
         $restante = substr($code,0,-1);

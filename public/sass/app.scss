@@ -177,11 +177,34 @@ body {
     font-style: normal;
     background-color: #F7F7F9;
 }
+.lblInp {
+    padding-left: 0px !important;
+    font-weight: 600 !important;
+    color: var(--grisOscuro) !important;
+    margin-bottom: 0px;
+    width: fit-content;
+    font-size: 15px !important;
+}
+h1 {
+    color: #2245A2 !important;
+    font-weight: 500;
+}
+h5 {
+    color: #5BA6DA !important;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0px;
+}
 .reloj {
     font-weight: bold;
 }
 .cp {
     cursor: pointer;
+}
+.circle {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
 }
 .modal p, .modal label, .modal button {
     font-family: "IBM Plex Sans", sans-serif;
@@ -408,6 +431,11 @@ tbody, td, tfoot, th, thead, tr {
 }
 .cp {
     cursor: pointer;
+}
+label.required::after {
+    content: "*";       /* Agrega el asterisco */
+    color: #ff8342;     /* Color del asterisco */
+    margin-left: 4px;   /* Espacio entre el texto y el asterisco */
 }
 @media (min-width: 1200px) {
     .navbar-header {

@@ -1,0 +1,61 @@
+.status {
+    font-weight: 600;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 17px;
+}
+#btnSave .spinner-border {
+    height: 15px;
+    width: 15px;
+}
+#btnEdit .spinner-border {
+    height: 15px;
+    width: 15px;
+}
+#btnSearch .spinner-border.btnSearch {
+    height: 15px;
+    width: 15px;
+}
+#btnReport .spinner-border {
+    height: 15px;
+    width: 15px;
+}
+.status-item {
+    cursor: pointer;
+}
+.active.status-item {
+    border: 2px #000000A6 solid;
+}
+.btn-disabled {
+    background-color: #636668 !important;
+    border-color: #636668 !important;
+    color: white !important;
+}
+.tr-active:hover, .tr-active:hover > td {
+    cursor: pointer;
+    background-color: #2463d8 !important;
+    color: white !important;
+}
+.tabs {
+    display: flex;
+    border-bottom: 2px #2463d8 solid;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+.tab-item {
+    font-size: 16px;
+    font-weight: 600;
+    color: #636668;
+    padding: 5px;
+    cursor: pointer;
+}
+.tab-item.active {
+    color: black;
+    border-bottom: 1px #2463d8 solid;
+    cursor: default;
+}
+#fechas {
+    display: flex;
+    gap: 5px;
+}

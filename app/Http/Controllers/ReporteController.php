@@ -30,7 +30,7 @@ class ReporteController extends Controller
     }
 
     public function getViajes($user) {
-        $viajes = Viaje::select("folio","status","date_creacion","dV.nombre","correo","telefono","tipo_pago","dO.nombre as origen","dD.nombre as destino","dD.precio")
+        $viajes = Viaje::select("folio","status","date_creacion","dV.nombre","correo","telefono","tipo_pago","dO.nombre as origen","dD.nombre as destino","dV.precio_viaje as precio")
         ->join("det_viaje as dV","dV.viaje_id","=","id_viaje")
         ->join("tbl_direcciones_webhook as dO","dO.id_direccion","=","dV.origen_id")
         ->join("tbl_direcciones_webhook as dD","dD.id_direccion","=","dV.destino_id")
@@ -64,7 +64,7 @@ class ReporteController extends Controller
                         case 1: $columns[]="dV.nombre"; $columns[]="dV.correo"; $columns[]="dV.telefono"; break; 
                         case 2: $columns[]="dO.nombre as origen"; $columns[]="dD.nombre as destino"; break; 
                         case 3: $columns[]="tbl_viajes.status"; break; 
-                        case 4: $columns[]="dD.precio"; break; 
+                        case 4: $columns[]="dV.precio_viaje as precio"; break; 
                         case 5: $columns[]="dD.distancia"; break; 
                         case 6: $columns[]="dD.duracion"; break; 
                         case 7: $columns[]="date_creacion as fecha_viaje"; break;  

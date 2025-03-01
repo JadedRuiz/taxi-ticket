@@ -12,6 +12,7 @@ export default defineConfig({
                 'public/sass/vehiculo.scss', 
                 'public/sass/operador.scss', 
                 'public/sass/reporte.scss', 
+                'public/sass/gasto.scss',
                 'public/js/app.js', 
                 'public/js/viaje.js', 
                 'public/js/login.js',              
@@ -20,8 +21,9 @@ export default defineConfig({
                 'public/js/vehiculo.js',
                 'public/js/operador.js',
                 'public/js/reporte.js',
+                'public/js/gasto.js'
             ],
             refresh: true,
         }),
-    ],
+    ]
 });

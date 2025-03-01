@@ -1,3 +1,4 @@
+import  'bootstrap';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import axios from 'axios';
@@ -6,7 +7,7 @@ window.Pusher = Pusher;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-Pusher.logToConsole = true;
+Pusher.logToConsole = false;
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: import.meta.env.VITE_PUSHER_APP_KEY,

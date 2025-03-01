@@ -8,6 +8,7 @@ use App\Http\Controllers\VehiculosController;
 use App\Http\Controllers\OperadorController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\GastoController;
 use App\Http\Controllers\Controller;
 
 #region [Vistas]
@@ -15,7 +16,7 @@ use App\Http\Controllers\Controller;
     // Route::get('/', [ViajeController::class, 'index'])->name('reserva.index');
     //Página Login
     Route::get('/', [UsuarioController::class, 'index'])->name('index');
-
+    Route::get('migrar',[ViajeController::class, 'migrar']);
     
 #endregion
 
@@ -47,6 +48,8 @@ use App\Http\Controllers\Controller;
             Route::get('destinos', [DestinoController::class, 'index'])->name('destinos');
             //Reportes
             Route::get('reportes', [ReporteController::class, 'index'])->name('reportes');
+            //Gastos
+            Route::get('gastos', [GastoController::class, 'index'])->name('gastos');
         #endregion
         #region [Rutas Api]
             Route::group(['as' => 'api.','prefix' => 'api'], function () {
@@ -54,12 +57,12 @@ use App\Http\Controllers\Controller;
                 Route::post('generarTicket', [AdminController::class, 'generarTicket'])->name("generar");
                 Route::post('asignarOperadorAViaje', [AdminController::class, 'asignarOperadorAViaje'])->name("asignarOperadorAViaje");  
                 Route::post('asignarOperadorAViajeAdmin', [AdminController::class, 'asignarOperadorAViajeAdmin'])->name("asignarOperadorAViajeAdmin");  
-                Route::post('cancelarViaje', [AdminController::class, 'cancelarViaje'])->name("cancelarViaje");  
+                Route::post('cambiarStatus', [AdminController::class, 'cambiarStatus'])->name("cambiarStatus");  
                 Route::post('agregarNuevoTurno', [AdminController::class, 'agregarNuevoTurno'])->name('agregarNuevoTurno');
                 Route::post('eliminarTurno', [AdminController::class, 'eliminarTurno'])->name('eliminarTurno');   
                 Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync'); 
                 Route::post('obtenerReservasCaja', [AdminController::class, 'obtenerReservasCaja'])->name('obtenerReservasCaja');
-                         
+                Route::post('obtenerViajeId', [ViajeController::class, 'obtenerViajeId'])->name('obtenerViajeId');
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');
@@ -74,6 +77,15 @@ use App\Http\Controllers\Controller;
                 Route::get('nuevoTurnoOperadores', [OperadorController::class, 'nuevoTurnoOperadores'])->name('nuevoTurnoOperadores');
                 //CRUD Reportes
                 Route::post('generarConsulta', [ReporteController::class, 'generarConsulta'])->name('generarConsulta');
+                //CRUD Gastos
+                Route::get('obtenerConceptos', [GastoController::class, 'getConcepts'])->name('obtenerConceptos');
+                Route::get('obtenerUltimoFolio', [GastoController::class, 'getLastFolio'])->name('obtenerUltimoFolio');
+                Route::post('agregarGasto', [GastoController::class, 'create'])->name('agregarGasto');
+                Route::post('obtenerGastoId', [GastoController::class, 'getGastoById'])->name('obtenerGastoId');
+                Route::post('actualizarGasto', [GastoController::class, 'update'])->name('actualizarGasto');
+                Route::post('generarFichaGasto', [GastoController::class, 'generateFichaGasto'])->name('generarFichaGasto');
+                Route::post('buscarFiltros', [GastoController::class, 'search'])->name('buscarFiltros');
+                Route::post('generarReporte', [GastoController::class, 'generateReport'])->name('generarReporte');
 
             });
         #endregion 

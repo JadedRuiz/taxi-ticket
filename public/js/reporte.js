@@ -2,62 +2,61 @@ import 'select2/dist/css/select2.min.css';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
-import('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js').then((select2) => {
-    
-    // Inicializa Select2
-    $(window).on("load", function() {
-        cargarOpciones();
-        $( '#select-columns' ).select2( {
+$(window).on("load", function() {
+    cargarOpciones();
+    import('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js').then((select2) => {
+        $('#select-columns').select2( {
             theme: "bootstrap-5",
             placeholder: $( this ).data( 'placeholder' ),
             closeOnSelect: false,
-        } );
-        $("#desglose").on("change", function() {
-            const desgloseVal = $(this).val();
-            $("#generarExcel").addClass("disabled");
-            $(".caja-filtro").toggleClass("d-none", desgloseVal != 2);
-            $(".operador-filtro").toggleClass("d-none", desgloseVal != 3);
-        });
-
-        // Evento de cambio de selección
-        let isChanging = false;
-        $('#select-columns').next().find('.select2-selection__choice').find('.select2-selection__choice__remove').addClass('d-none');
-        $('#select-columns').on('change', function() {
-            if (!isChanging) {
-                let seleccion = $(this).val();
-                isChanging = true;
-                console.log($(this).val().length);
-                if (seleccion[0] == '-1' && ($(this).val().length > 2)) {
-                    $(this).val(['-1']).trigger('change'); // Deselecciona todas y selecciona solo '-1'
-                    $('#select-columns').next().find('.select2-selection__choice').find('.select2-selection__choice__remove').addClass('d-none');
-                } else {
-                    // Si no se selecciona "-1", asegura que se deseleccione la opción "-1"
-                    $(this).find('option[value="-1"]').prop('selected', false);
-                    $(this).trigger('change'); // Desactiva la opción '-1' y dispara el cambio
-                }
-            }
-            isChanging = false;
-        });
-
-        $("#aplicarFiltros").on("submit", function(e) {
-            e.preventDefault();
-            let json = {};
-            $(this).find('input, select').each((index, element) => {
-                json[$(element).attr("name")] = $(element).val();
-            });
-            $.post(window.routes.generarConsulta,json,function(res) {
-                if(res.ok) {
-                    $("#generarExcel").removeClass("disabled");
-                    $("#datatable").html(res.data);
-                }
-            });
-        });
-
-        $("#generarExcel").on("click", function() {
-            exportarExcel();
         });
     });
+    $("#desglose").on("change", function() {
+        const desgloseVal = $(this).val();
+        $("#generarExcel").addClass("disabled");
+        $(".caja-filtro").toggleClass("d-none", desgloseVal != 2);
+        $(".operador-filtro").toggleClass("d-none", desgloseVal != 3);
+    });
+
+    // Evento de cambio de selección
+    let isChanging = false;
+    $('#select-columns').next().find('.select2-selection__choice').find('.select2-selection__choice__remove').addClass('d-none');
+    $('#select-columns').on('change', function() {
+        if (!isChanging) {
+            let seleccion = $(this).val();
+            isChanging = true;
+            console.log($(this).val().length);
+            if (seleccion[0] == '-1' && ($(this).val().length > 2)) {
+                $(this).val(['-1']).trigger('change'); // Deselecciona todas y selecciona solo '-1'
+                $('#select-columns').next().find('.select2-selection__choice').find('.select2-selection__choice__remove').addClass('d-none');
+            } else {
+                // Si no se selecciona "-1", asegura que se deseleccione la opción "-1"
+                $(this).find('option[value="-1"]').prop('selected', false);
+                $(this).trigger('change'); // Desactiva la opción '-1' y dispara el cambio
+            }
+        }
+        isChanging = false;
+    });
+
+    $("#aplicarFiltros").on("submit", function(e) {
+        e.preventDefault();
+        let json = {};
+        $(this).find('input, select').each((index, element) => {
+            json[$(element).attr("name")] = $(element).val();
+        });
+        $.post(window.routes.generarConsulta,json,function(res) {
+            if(res.ok) {
+                $("#generarExcel").removeClass("disabled");
+                $("#datatable").html(res.data);
+            }
+        });
+    });
+
+    $("#generarExcel").on("click", function() {
+        exportarExcel();
+    });
 });
+
 function cargarOpciones(tipo = 1) {
     let array = [
         "Folio",

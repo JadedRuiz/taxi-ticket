@@ -22,7 +22,8 @@ class DetViajeModel extends Model
         'nombre', 
         'correo', 
         'telefono', 
-        'tipo_pago'
+        'tipo_pago',
+        'precio_viaje'
     ];
 
     const UPDATED_AT = null;

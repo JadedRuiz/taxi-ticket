@@ -9,6 +9,10 @@
     display: flex;
     align-items: center;
 }
+#table-content {
+    visibility: hidden; 
+    position: absolute;
+}
 #iniciarOperacion span {
     font-size: 20px;
     margin: 0px;
@@ -120,6 +124,79 @@
     font-weight: bold;
     color: #495057;
 }
+.inpStatus {
+    display: flex;
+    gap: 10px;
+}
+.status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border: 1px #74788d solid;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.status.active {
+    background-color: #31d2f24b;
+    cursor: default;
+}
+.titulo-modal-editar {
+    font-weight: 500;
+}
+//Spiner
+.loader {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    border: 3px solid;
+    border-color: #CFD6E3 #CFD6E3 transparent transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+.loader::after,
+.loader::before {
+    content: '';  
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: 3px solid;
+    border-color: transparent transparent #5AA5D9 #5AA5D9;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: rotationBack 0.5s linear infinite;
+    transform-origin: center center;
+}
+.loader::before {
+    width: 32px;
+    height: 32px;
+    border-color: #CFD6E3 #CFD6E3 transparent transparent;
+    animation: rotation 1.5s linear infinite;
+}      
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+    @keyframes rotationBack {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-360deg);
+    }
+}  
 @supports not selector(::-webkit-scrollbar) {
     .lstVehiculos {
         scrollbar-color: var(--sb-thumb-color)

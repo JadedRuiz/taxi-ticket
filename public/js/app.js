@@ -1,7 +1,4 @@
-import  './bootstrap' ; 
-import  'bootstrap' ;
-import $ from 'jquery';
-window.$ = window.jQuery = $; // Haz jQuery disponible globalmente
+import  './bootstrap';
 
 function updateClock() {
     const now = new Date();
