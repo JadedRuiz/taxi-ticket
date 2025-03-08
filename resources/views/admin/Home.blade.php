@@ -53,7 +53,7 @@
                                         @if($turnos["ok"] && count($turnos["data"]) > 0)
                                             <div class="lstTurnos">
                                                 @foreach($turnos["data"] as $index => $turno)
-                                                    @if(in_array($user->permisos->perfil, ["Administrador"]))
+                                                    @if(in_array($user->permisos->perfil, ["Administrador", "Operador"]))
                                                         <li class="list-group-item row px-0 mx-0 d-flex">
                                                             <div class="col-2 px-0 border-orden">{{ $index+1 }}</div>
                                                             <div class="col-10 d-flex justify-content-between">
@@ -112,7 +112,10 @@
                                     <tbody>
                                         @foreach($reservaciones as $reservacion)
                                             <tr data-id={{ $reservacion->id_viaje }}>
-                                                <td>{{ $reservacion->folio }}</td>
+                                                <td>
+                                                    @if(str_contains($reservacion->nombre_viaje, "Reserva Myride")) <i class="fa fa-calendar mx-1" aria-hidden="true"></i> @endif
+                                                    {{ $reservacion->folio }}
+                                                    </td>
                                                 @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
                                                     <td>
                                                         {{ strtoupper($reservacion->nombre) }}
@@ -138,6 +141,9 @@
                                                             <br>
                                                             {{ $reservacion->nombres }} {{ $reservacion->apellidos }}
                                                         </td>
+                                                    @endif
+                                                    @if($reservacion->status == "Cerrado")
+                                                        <td class="text-center td-status"><span class="badge rounded-pill bg-danger">Cerrado</span></td>
                                                     @endif
                                                 @endif
                                                 @if(in_array($user->permisos->perfil, ["Cajera","Administrador"]))
@@ -174,7 +180,7 @@
                                                                 <i class="fa fa-bars" aria-hidden="true"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                                                            <li><a class="dropdown-item cp btnAsignarOperadorAdmin"data-attr="{{ $reservacion->id_viaje }}">Asignar viaje</a></li>
+                                                            <li><a class="dropdown-item cp btnAsignarOperadorAdmin" data-attr="{{ $reservacion->id_viaje }}" data-caja="{{ $reservacion->caja_id }}">Asignar viaje</a></li>
                                                             <li><a class="dropdown-item cp btnTicket {{$reservacion->status == "Pending" ? 'disabled' : ''}}" data-attr="{{ $reservacion->id_viaje }}">Generar ticket</a></li>
                                                             <li><a class="dropdown-item cp btnEditar" data-attr="{{ $reservacion->id_viaje }}">Editar viaje</a></li>
                                                             {{-- <li><a class="dropdown-item cp btnCancelar" data-attr="{{ $reservacion->id_viaje }}">Cancelar Viaje</a></li> --}}
@@ -198,7 +204,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Previsulización de ticket</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Previsulizacion de ticket</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -239,7 +245,8 @@
                 'cierreOperacion' : '{{ route('auth.cierreOperacion') }}',
                 'cambiarStatus' : '{{ route('admin.api.cambiarStatus') }}',
                 'obtenerReservasCaja' : '{{ route('admin.api.obtenerReservasCaja') }}',
-                'obtenerViajeId' : '{{ route('admin.api.obtenerViajeId') }}'
+                'obtenerViajeId' : '{{ route('admin.api.obtenerViajeId') }}',
+                'editarViaje' : '{{ route('admin.api.editarViaje') }}'
             }
             window.user = @json($user);
         </script>

@@ -18,6 +18,7 @@ use App\Events\ActualizarTurno;
 use App\Events\ActualizarViaje;
 use App\Events\InsertarViaje;
 use GuzzleHttp\Client;
+use Exception;
 
 class AdminController extends Controller
 {
@@ -30,9 +31,8 @@ class AdminController extends Controller
             $reservaciones = [];
             if(in_array($user->permisos->perfil, ["Cajera"]) && $turno_caja["ok"]) {
                 $reservaciones_totales = DB::table("tbl_viajes as tblV")
-                ->select("id_viaje", "folio", "dtV.nombre", "dtV.correo", "dtV.telefono", "tblV.date_creacion", "tblDo.nombre as origen", "tblDd.nombre as destino", "tblDd.precio", "tblV.status", "tblO.nombres", "tblO.apellidos", "dtV.tipo_pago", "tTC.dt_inicio_operacion")
+                ->select("id_viaje", "tblV.nombre_viaje", "folio", "dtV.nombre", "dtV.correo", "dtV.telefono", "tblV.date_creacion", "tblDo.nombre as origen", "tblDd.nombre as destino", "tblDd.precio", "tblV.status", "tblO.nombres", "tblO.apellidos", "dtV.tipo_pago", "tblV.caja_id")
                 ->join("det_viaje as dtV", "dtV.viaje_id", "=", "id_viaje")
-                ->join("tbl_turnos_caja as tTC", "tTC.caja_id", "=", "tblV.caja_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDo", "tblDo.id_direccion", "dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd", "tblDd.id_direccion", "dtV.destino_id")
                 ->leftJoin("rel_viaje_vehiculo_operador as rlVVO", "rlVVO.viaje_id", "=", "id_viaje")
@@ -40,21 +40,19 @@ class AdminController extends Controller
                 ->leftJoin("tbl_operadores as tblO", "tblO.id_operador", "=", "rlVO.operador_id")
                 ->where("tblV.empresa_id", $user->id_empresa)
                 ->where("tblV.status", '<>', "Cerrado")
-                ->where("tblV.caja_id", $user->caja_id)
-                ->where("tTC.b_status", "1")
-                ->orderByRaw("CASE WHEN tblV.status = 'Pending' THEN 0 ELSE 1 END") // Primero ordena por status
+                ->whereIn("tblV.caja_id", [$user->caja_id, 0])
                 ->orderBy("tblV.date_creacion", 'DESC') // Luego ordena por fecha de creación dentro de cada grupo de status
                 ->get();
                 $reservaciones = [];
                 foreach($reservaciones_totales as $reservacion) {
-                    if($reservacion->date_creacion >=  $reservacion->dt_inicio_operacion) {
+                    if($reservacion->date_creacion >=  $turno_caja["data"]->dt_inicio_operacion) {
                         array_push($reservaciones,$reservacion);
                     }
                 }
             }
             if(in_array($user->permisos->perfil, ["Administrador"])) {
                 $reservaciones = DB::table("tbl_viajes as tblV")
-                ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago")
+                ->select("id_viaje", "tblV.nombre_viaje", "folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago", "tblV.caja_id")
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
@@ -62,14 +60,13 @@ class AdminController extends Controller
                 ->leftJoin("rel_vehiculo_operador as rlVO","rlVO.id_vehiculo_operador","=","rlVVO.vehiculo_operador_id")
                 ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
                 ->where("tblV.empresa_id",$user->id_empresa)
-                ->orderByRaw("CASE WHEN tblV.status = 'Pending' THEN 0 ELSE 1 END") // Primero ordena por status
                 ->orderBy("tblV.date_creacion", 'DESC') // Luego ordena por fecha de creación dentro de cada grupo de status
                 ->limit(300)
                 ->get();
             }
             if(in_array($user->permisos->perfil, ["Operador"])) {
                 $reservaciones = DB::table("tbl_viajes as tblV")
-                ->select("id_viaje","folio","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblV.status", "tblO.nombres","tblO.apellidos")
+                ->select("id_viaje", "tblV.nombre_viaje", "folio","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblV.status", "tblO.nombres","tblO.apellidos")
                 ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
                 ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
                 ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
@@ -78,7 +75,6 @@ class AdminController extends Controller
                 ->leftJoin("tbl_operadores as tblO","tblO.id_operador","=","rlVO.operador_id")
                 ->where("tblV.empresa_id",$user->id_empresa)
                 ->where("tblV.status",'<>',"Cerrado")
-                ->orderByRaw("CASE WHEN tblV.status = 'Pending' THEN 0 ELSE 1 END") // Primero ordena por status
                 ->orderBy("tblV.date_creacion", 'DESC') // Luego ordena por fecha de creación dentro de cada grupo de status
                 // ->orderBy("tblV.folio",'DESC')
                 ->get();
@@ -138,7 +134,7 @@ class AdminController extends Controller
     }
 
     public function encriptar(Request $body) {
-        return $this->decode_json($body["password"]);
+        return $this->encode_json($body["password"]);
     }
 
     public function obtenerTurnoCaja($caja_id) {
@@ -300,7 +296,7 @@ class AdminController extends Controller
             // Actualizar el estado del viaje
             DB::table("tbl_viajes")
                 ->where("id_viaje", $request->id_viaje)
-                ->update(["status" => "En servicio"]);
+                ->update(["status" => "En servicio", "caja_id" => $user->caja_id]);
 
             //Lanzamos el evento para actualizar todos los clientes
             $turnosActualizados = $this->obtenerTurnos($user);
@@ -357,7 +353,10 @@ class AdminController extends Controller
             // Actualizar el estado del viaje
             DB::table("tbl_viajes")
             ->where("id_viaje", $request->id_viaje)
-            ->update(["status" => "En servicio"]);
+            ->update([
+                "status" => "En servicio",
+                "caja_id" => $request->caja_id
+            ]);
 
             //Lanzamos el evento para actualizar todos los clientes
             $turnosActualizados = $this->obtenerTurnos($user);
@@ -580,7 +579,6 @@ class AdminController extends Controller
             //     "caja_id" => -1,
 
             // ]));
-
             
             DB::commit();            
 

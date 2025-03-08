@@ -63,6 +63,7 @@ use App\Http\Controllers\Controller;
                 Route::get('getTurnos', [AdminController::class, 'obtenerTurnosAsync'])->name('obtenerTurnosAsync'); 
                 Route::post('obtenerReservasCaja', [AdminController::class, 'obtenerReservasCaja'])->name('obtenerReservasCaja');
                 Route::post('obtenerViajeId', [ViajeController::class, 'obtenerViajeId'])->name('obtenerViajeId');
+                Route::post('editarViaje', [ViajeController::class, 'editarViaje'])->name('editarViaje');
                 //CRUD Destino
                 Route::post('obtenerDestinoId', [DestinoController::class, 'obtenerDestinoIdAdmin'])->name('getDestinoId');
                 Route::post('guardarDestino', [DestinoController::class, 'guardarDestino'])->name('guardarDestino');

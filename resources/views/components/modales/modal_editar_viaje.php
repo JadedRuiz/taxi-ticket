@@ -8,7 +8,7 @@
                     <br>
                     <p class="card-title-desc">Edita o cambia el status del viaje seleccionado</p>
                 </h1>
-                <button type="button" class="btn-close btnModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btnModalCloseEditar" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row gap-2">
@@ -56,7 +56,7 @@
                     <div class="col-12 mt-1">
                         <h5>Edicion del Viaje</h5>
                     </div>
-                    <form id="formViaje" class="row">                        
+                    <form id="formViaje" class="row needs-validation" novalidate>                        
                         <div class="col-lg-2 col-sm-12 mt-2">
                             <label for="folio" class="lblInp">Folio</label>
                             <input type="text" class="form-control" id="folio" name="folio" disabled>
@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-lg-3 col-sm-12 mt-2">
                             <label for="caja" class="lblInp required">Caja</label>
-                            <select class="form-select" aria-label="Caja que registro" id="caja_id">
+                            <select class="form-select" aria-label="Caja que registro" id="caja_id" name="caja_id">
                                 <option value="1">Caja Uno</option>
                                 <option value="2">Caja Dos</option>
                             </select>
@@ -101,11 +101,11 @@
                         </div>
                         <div class="col-lg-3 col-sm-12 mt-2">
                             <label for="precio" class="lblInp required">Precio</label>
-                            <input type="text" class="form-control" id="precio" name="precio">
+                            <input type="text" class="form-control" id="precio" name="precio_viaje">
                         </div>
                         <div class="col-lg-3 col-sm-12 mt-2">
                             <label for="tipo_pago" class="lblInp required">Tipo de pago</label>
-                            <select class="form-select" aria-label="Caja que registro" id="tipo_pago">
+                            <select class="form-select" aria-label="Caja que registro" id="tipo_pago" name="tipo_pago">
                                 <option value="Credit card on pickup">Pago con targeta</option>
                                 <option value="Cash">Efectivo</option>
                             </select>

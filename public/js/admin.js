@@ -1,8 +1,9 @@
 import DataTable from 'datatables.net-dt';
-import $ from 'jquery';
+import $, { event } from 'jquery';
 import Swal from 'sweetalert2';
 
 var id_viaje=0;
+var id_caja= 0;
 var user=0;
 var table = null;
 var swalWithBootstrapButtons = null;
@@ -260,10 +261,35 @@ $(document).on("click",".btnAsignarOperador", function() {
 
 //Abrir Modal Asignacion libre
 $(document).on("click",".btnAsignarOperadorAdmin", function() {
-    id_viaje = $(this).attr("data-attr");
+    id_viaje = $(this).data("attr");
+    id_caja = $(this).data("caja");
     $.get(window.routes.obtenerTurnosAsync, (res) => {
         $(".lstTurnosAdmin").html(actualizarListaTurnos(res, 1));
-        $(".btnModalAsigViajeAdmin").click();
+        if( id_caja == 0 ) {
+            Swal.fire({
+                title: 'Selecciona una Caja',
+                html: `
+                  <select id="mySelect" class="form-select">
+                    <option value="1">Caja Uno</option>
+                    <option value="2">Caja Dos</option>
+                  </select>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Seleccionar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                  const selectedValue = document.getElementById('mySelect').value;
+                  return selectedValue;
+                }
+            }).then((result) => {
+                if ( result.isConfirmed ) {
+                    id_caja = result.value;
+                    $(".btnModalAsigViajeAdmin").click();
+                }
+            });
+        } else {
+            $(".btnModalAsigViajeAdmin").click();
+        }
     })
 });
 
@@ -288,10 +314,9 @@ $(document).on("click",".btnAsignarViajeAdmin", function() {
             timer: 30000
         });
         swalWithBootstrapButtons.showLoading();
-        $.post(window.routes.asignarOperadorAViajeAdmin, {id_viaje: id_viaje, id_vehiculo_operador: id_vehiculo_operador}, (res) => {
+        $.post(window.routes.asignarOperadorAViajeAdmin, {id_viaje: id_viaje, id_vehiculo_operador: id_vehiculo_operador, caja_id : id_caja}, (res) => {
             if(res.ok) {
                 Swal.close();
-                // actualizarTablaViajes(user.id_empresa, user.caja_id);
                 $(".btnModalAsigViajeAdminClose").click();
                 Swal.fire({
                     title: "Buen trabajo!",
@@ -314,6 +339,47 @@ $(document).on("click",".btnAsignarViajeAdmin", function() {
     });
 });
 
+//Editar Viaje
+$("#formViaje").on("submit", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    swalWithBootstrapButtons.fire({
+        title: "Un momento...",
+        text: "El viaje esta siendo editado",
+        showConfirmButton: false,
+        timer: 30000
+    });
+    swalWithBootstrapButtons.showLoading();
+    //crear JSON
+    let json = {
+        id_viaje : id_viaje
+    };
+    $('#formViaje').find('input, select').not(':disabled').each(function() {
+        // Aquí puedes trabajar con cada input/select
+        json[$(this).attr('name')] = $(this).val();
+    });
+    $.post(window.routes.editarViaje, json, (res) => {
+        if(res.ok) {
+            Swal.close();
+            Swal.fire({
+                title: "Buen trabajo!",
+                text: "Has editado el viaje",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }else {
+            Swal.fire({
+                title: "Aviso!",
+                text: res.message,
+                icon: "warning",
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+        $(".btnModalCloseEditar").click();
+    });
+})
 //Iniciar Operaciones
 $(document).on("click","#iniciarOperacion", function() {
     $.post(window.routes.inicioOperacion, {}, (res) => {
@@ -548,7 +614,12 @@ function insertarNuevoViaje(viaje) {
         ${ td_accion }
     </tr>`;
     table.destroy();
-    $("#datatable tbody").prepend(tr);
+    if(user.permisos.perfil == "Cajera" && [user.caja_id, 0].includes(viaje.caja_id)) {
+        $("#datatable tbody").prepend(tr);
+    }
+    if(["Cajera", "Administrador"].includes(user.permisos.perfil)) {
+        $("#datatable tbody").prepend(tr);
+    }
     table = inicarTabla();
 }
 

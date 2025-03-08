@@ -60,7 +60,7 @@
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item cp btnAsignarOperadorAdmin"data-attr="{{ $reservacion->id_viaje }}">Asignar viaje</a></li>
+            <li><a class="dropdown-item cp btnAsignarOperadorAdmin" data-attr="{{ $reservacion->id_viaje }}" data-caja="{{ $reservacion->caja_id }}">Asignar viaje</a></li>
             <li><a class="dropdown-item cp btnTicket {{$reservacion->status == "Pending" ? 'disabled' : ''}}" data-attr="{{ $reservacion->id_viaje }}">Generar ticket</a></li>
             <li><a class="dropdown-item cp btnEditar" data-attr="{{ $reservacion->id_viaje }}">Editar viaje</a></li>
             {{-- <li><a class="dropdown-item cp btnCancelar" data-attr="{{ $reservacion->id_viaje }}">Cancelar Viaje</a></li> --}}

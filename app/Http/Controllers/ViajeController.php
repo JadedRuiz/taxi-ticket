@@ -51,7 +51,7 @@ class ViajeController extends Controller
 
     static function refescarViajeSocket($id_viaje) {
         $reservacion = DB::table("tbl_viajes as tblV")
-        ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago")
+        ->select("id_viaje","folio","dtV.nombre","dtV.correo","dtV.telefono","tblV.date_creacion","tblDo.nombre as origen","tblDd.nombre as destino","tblDd.precio","tblV.status", "tblO.nombres","tblO.apellidos","dtV.tipo_pago","tblV.caja_id")
         ->join("det_viaje as dtV","dtV.viaje_id","=","id_viaje")
         ->leftJoin("tbl_direcciones_webhook as tblDo","tblDo.id_direccion","dtV.origen_id")
         ->leftJoin("tbl_direcciones_webhook as tblDd","tblDd.id_direccion","dtV.destino_id")
@@ -132,6 +132,36 @@ class ViajeController extends Controller
 
     function reservaExitosa() {
         return view('reserva_exitosa');
+    }
+
+    public function editarViaje(Request $request) {
+        try {
+            DB::beginTransaction();
+            if($request->date_creacion == "") {
+                return ['ok' => false, "data" => "La fecha del viaje es obligatorio"];
+            }
+            $fecha = date("Y-m-d H:i:s", strtotime($request->date_creacion));
+            DB::table("tbl_viajes")
+            ->where("id_viaje",$request->id_viaje)
+            ->update([
+                "caja_id" => $request->caja_id,
+                "date_creacion" => $fecha
+            ]);
+            DB::table("det_viaje")
+            ->where("viaje_id",$request->id_viaje)
+            ->update([
+                "nombre" => $request->nombre,
+                "correo" => $request->correo,
+                "telefono" => $request->telefono,
+                "tipo_pago" => $request->tipo_pago,
+                "precio_viaje" => $request->precio_viaje
+            ]);
+            DB::commit();
+            return ['ok' => true, "data" => "Viaje Editado"];
+        } catch(\Exception | \PDOException $e){
+            DB::rollBack();
+            return ['ok' => false, "data" => "Ha ocurrido un error: ". $e->getMessage()];
+        }
     }
 
     public function migrar() {
